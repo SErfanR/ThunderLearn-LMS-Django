@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class Classroom(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=150, unique=True)
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name='teacher_class')
     students = models.ManyToManyField(User, related_name='student_class', blank=True)
     assistants = models.ManyToManyField(User, related_name='assistant_class', blank=True)
@@ -29,5 +29,29 @@ class Classroom(models.Model):
             pass  # TODO: return and except statement
 
 
+# Exams models
+class Exam(models.Model):
+    title = models.CharField(max_length=50)
+    des = models.TextField()
+    author = models.ForeignKey(User, related_name='user_exams', on_delete=models.CASCADE)
+    classrooms = models.ManyToManyField(Classroom, related_name='class_exams')
+    # TODO: timed exm options and start and finish date_time
+
+
+class Part(models.Model):
+    title = models.CharField(max_length=50)
+    des = models.TextField()
+    exam = models.ForeignKey(Exam, related_name='parts', on_delete=models.CASCADE)
+
+
+class Question(models.Model):
+    body = models.TextField()  # TODO: RichTextField
+    part = models.ForeignKey(Part, related_name='questions', on_delete=models.CASCADE)
+
+
 class Choice(models.Model):
     body = models.TextField()
+    question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
+
+
+# TODO: lessons models

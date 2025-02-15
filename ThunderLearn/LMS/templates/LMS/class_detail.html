@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="card" id="card003">
+
+        <div class="card-body">
+            <h3 class="card-title text-center" id="title001">{{ class.name }}</h3>
+        </div>
+
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" {% if class.assistants.count == 0 %}id="listItem001"{% endif %}>
+                <h4> مدرس: {{ class.teacher }} </h4>
+            </li>
+            {% if class.assistants.count != 0 %}
+                <li class="list-group-item" id="listItem001">
+                    <h5> دستیار: {% for a in class.assistants.all %}
+                            {{ a }}
+                        {% endfor %}
+                    </h5>
+                </li>
+            {% endif %}
+        </ul>
+
+    </div>
+    {% if class.class_ways.count != 0 %}
+        <div class="card" id="card002">
+
+            <h3 class="card-title text-center" id="title002">مسیر های این کلاس</h3>
+
+            {% for way in class.class_ways.all %}
+                <div class="card" id="card001">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ way.title}}</h5>
+                        <a href="{% url 'way_detail' way.id %}" class="btn btn-primary">مشاهده</a>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    {% endif %}
+    <style>
+        ul {
+            padding: 0;
+        }
+        #listItem001 {
+            border-radius: 0 0 10px 10px;
+        }
+        #card001, #card002, #card003 {
+            margin: 1vw;
+        }
+        #card001 {
+            {#background-image: url({% static "LMS/001.jpg" %});#}
+            background-size: cover;
+            background-position: center;
+            box-shadow:  8px 8px 16px #666666,
+            0px 0px 0px #ffffff;
+            border: 0;
+        }
+        #card002 {
+            border-radius: 20px;
+            background: #e0e0e0;
+            border: 0;
+        }
+        #card002 {
+            box-shadow: inset 9px 9px 18px #5a5a5a,
+            inset -9px -9px 18px #ffffff;
+        }
+        #card003 {
+            min-width: 100vw;
+            margin: 0;
+            box-shadow:  14px 14px 28px #3f3f3f,
+             0px 0px 0px #ffffff;
+            border: none;
+            border-radius: 0 0 10px 10px;
+        }
+        #card003 {
+            background-image: linear-gradient(-90deg, darkslategray, darkseagreen);
+        }
+        #title001 {
+            margin-top: 1vh;
+        }
+        #title002 {
+            margin-top: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+    </style>
+{% endblock %}

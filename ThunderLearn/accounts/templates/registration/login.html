@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<center>
+    <div class="card center" id="card001">
+    <h3 class="card-title">ورود</h3>
+    <center>
+        <form method="post" class="center">
+            {% csrf_token %}
+
+            <div class="input-group mb-3 center" dir="ltr">
+                <span class="input-group-text" id="basic-addon1">نام کاربری</span>
+                <input class="form-control" type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required id="id_username">
+            </div>
+
+            <div class="input-group mb-3 center" dir="ltr">
+                <span class="input-group-text" id="basic-addon1">رمز عبور</span>
+                <input class="form-control" type="password" name="password" autocomplete="current-password" required id="id_password">
+            </div>
+
+            <button type="submit" class="btn btn-primary center">ورود</button>
+        </form>
+        <div class="card-footer">
+            حساب کاربری ندارید؟
+            <a href="/register/">ثبت نام</a>
+        </div>
+    </center>
+    </div>
+</center>
+    <style>
+        body{
+            background-image: url("{% static "accounts/login.jpg" %}");
+            background-position: center;
+            background-size: cover;
+        }
+        #card001 {
+            max-width: 700px;
+            margin-top: 100px;
+            padding: 10px;
+            padding-left: 20px;
+            padding-right: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        .card-title{
+            padding: 10px;
+        }
+        button{
+            margin: 10px;
+        }
+        .card-footer{
+            padding: 0;
+            padding-top: 10px;
+        }
+    </style>
+{% endblock %}

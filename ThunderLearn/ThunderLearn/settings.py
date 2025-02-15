@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'LMS.apps.LmsConfig', # added our lms app by it's config
+    'LMS.apps.LmsConfig',  # added our lms app by its config
+    'accounts.apps.AccountsConfig',  # like top
 ]
 
 MIDDLEWARE = [
@@ -55,7 +56,7 @@ ROOT_URLCONF = 'ThunderLearn.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,6 +68,10 @@ TEMPLATES = [
         },
     },
 ]
+
+STATIC_URL = "static/"
+
+LOGIN_URL = 'login'
 
 WSGI_APPLICATION = 'ThunderLearn.wsgi.application'
 

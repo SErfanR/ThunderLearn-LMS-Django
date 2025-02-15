@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <div class="card container text-center bg-dark" id="card003">
+        <div class="row">
+            <div class="card bg-success col-sm" id="card004">
+                <div class="card-body">
+                    <h5 class="card-title text-center">
+                        {% if user.student_class.count == None %}
+                            0 کلاس
+                        {% else %}
+                            {{ user.student_class.count }} کلاس
+                        {% endif %}
+                    </h5>
+                </div>
+            </div>
+            <div class="card bg-danger col-sm" id="card005">
+                <div class="card-body">
+                    <h5 class="card-title text-center">
+                        {% if user.user_answer.count == None %}
+                            0 آزمون پاسخ داده شده
+                        {% else %}
+                            {{ user.user_answer.count }} آزمون پاسخ داده شده
+                        {% endif %}
+                    </h5>
+                </div>
+            </div>
+            <div class="card bg-warning col-sm" id="card006">
+                <div class="card-body">
+                    <h5 class="card-title text-center">
+                        {% if user.user_score.count == None %}
+                            0 آزمون تصحیح شده
+                        {% else %}
+                            {{ user.user_score.count }} آزمون تصحیح شده
+                        {% endif %}
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" id="card002">
+
+        <h3 class="card-title text-center" id="title001">کلاس های من</h3>
+
+        {% for class in user.student_class.all %}
+            <div class="card" id="card001" style="
+                {% if forloop.counter|divisibleby:2 %}
+                    background-image: linear-gradient(90deg, midnightblue, #99fcd8);
+                {% else %}
+                    background-image: linear-gradient(90deg, brown, bisque);
+                {% endif %}
+">
+                <h5 class="card-header">{{ class.teacher }}</h5>
+                <div class="card-body">
+                    <h5 class="card-title">{{ class.name}}</h5>
+                    <a href="{% url 'class_detail' class.id %}" class="btn btn-outline-dark" id="show">مشاهده</a>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+    <style>
+        #card001, #card002 {
+            margin: 1vw;
+        }
+        #card003 {
+            min-width: 100vw;
+            margin: 0;
+            box-shadow:  14px 14px 28px #3f3f3f,
+             0px 0px 0px #ffffff;
+            border: none;
+            border-radius: 10px;
+        }
+        #card004, #card005, #card006 {
+            border-radius: 0;
+            border: none;
+        }
+        #card004{
+            border-radius: 0 0 10px 0;
+        }
+        #card006{
+            border-radius: 0 0 0 10px;
+        }
+        #card004, #card005, #card006 {
+            background-image: linear-gradient(darkslategray, #3f6262);
+            color: whitesmoke;
+        }
+        #card001 {
+            {#background-image: url({% static "LMS/001.jpg" %});#}
+            background-size: cover;
+            background-position: center;
+            box-shadow:  8px 8px 16px #666666,
+             0px 0px 0px #ffffff;
+            border: 0;
+        }
+        #card002 {
+            border-radius: 20px;
+            background: #e0e0e0;
+            box-shadow: inset 9px 9px 18px #5a5a5a,
+            inset -9px -9px 18px #ffffff;
+            border: 0;
+        }
+        #title001 {
+            margin-top: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+    </style>
+{% endblock %}

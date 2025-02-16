@@ -5,6 +5,7 @@
     "timezone": "America/Los_Angeles",
     "compileMessages": false,
     "modifySettings": true,
-    "geospatial": false
+    "geospatial": false,
+    "collectStatic": false,
   }
 }

@@ -13,7 +13,7 @@
             {% if class.assistants.count != 0 %}
                 <li class="list-group-item" id="listItem001">
                     <h5> دستیار: {% for a in class.assistants.all %}
-                            {{ a }}
+                            {{ a }},
                         {% endfor %}
                     </h5>
                 </li>

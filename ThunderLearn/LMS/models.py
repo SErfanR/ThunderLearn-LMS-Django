@@ -48,7 +48,6 @@ class Exam(models.Model):
     des = models.TextField()
     author = models.ForeignKey(User, related_name='user_exams', on_delete=models.CASCADE)
     classrooms = models.ManyToManyField(Classroom, related_name='class_exams')
-    # TODO: timed exam options and start and finish date_time
 
 
 class Part(models.Model):
@@ -71,22 +70,11 @@ class ExamAnswer(models.Model):
     exam = models.ForeignKey(Exam, related_name='exam_answer', on_delete=models.CASCADE)
     answers = models.TextField()
 
-    def dump_answer(self, a):  # gets a dict and dumps it and puts it in answers as a str
-        self.answers = json.dumps(a)  # TODO: return
-
-    def load_answer(self):  # reads self.answers and returns it as a dict for calculations or ...
-        return json.loads(self.answers)
-
 
 class UserAnswer(models.Model):
     exam = models.ForeignKey(Exam, related_name='exam_user_answers', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='user_answers', on_delete=models.CASCADE)
-    answers = models.TextField()
-
-    def add_or_change_answer(self, q, a):  # gets a question number and user answer for it and puts them in self.answers
-        answers_dict = json.loads(self.answers)
-        answers_dict[q] = a
-        self.answers = json.dumps(answers_dict)
+    answers = models.TextField(blank=True)
 
 
 class UserScore(models.Model):

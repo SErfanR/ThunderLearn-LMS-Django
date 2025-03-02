@@ -1,29 +1,57 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-  <h3>
-    <a class="navbar-brand" href="/">صاعقه</a>
-  </h3>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/">خانه</a>
-        </li>
-        {% if user.is_authenticated %}
-        <li class="nav-item">
-          <form method="post" action="{% url 'logout' %}">
-           {% csrf_token %}
-           <button class="btn btn-danger" type="submit">خروج</button>
-          </form>
-        </li>
-        {% else %}
-        <li class="nav-item">
-          <a class="btn btn-primary active" aria-current="page" href="/login/">ورود یا ثبت نام</a>
-        </li>
-        {% endif %}
-      </ul>
+<nav class="navbar navbar-fixed-top navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <h3>
+            <a class="navbar-brand" href="/">صاعقه</a>
+        </h3>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">خانه</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <div class="dropdown" dir="rtl">
+                        <a href="#"
+                           class="badge text-primary-emphasis bg-primary-subtle border border-primary-subtle
+                           d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user }}
+                            {% if user.avatar.exists %}
+                                <img src="{{ user.avatar.last.avatar }}" alt="" width="32" height="32" class="rounded-circle me-2">
+                            {% else %}
+                                <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu text-small shadow" style="" dir="rtl">
+                            <li><a class="dropdown-item" href="#">تنظیمات</a></li>
+                            <li><a class="dropdown-item" href="#">پروفایل</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button class="dropdown-item text-danger" type="submit">خروج</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="btn btn-primary active" aria-current="page" href="/login/">ورود یا ثبت نام</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
-  </div>
 </nav>
+<!--<style>-->
+<!--  .navbar{-->
+<!--    position:fixed;-->
+<!--    width:100%;-->
+<!--    z-index: 1000000;-->
+<!--    top:0;-->
+<!--  }-->
+<!--</style>-->

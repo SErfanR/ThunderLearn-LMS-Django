@@ -1,26 +1,47 @@
 {% extends "base.html" %}
 {% block content %}
+{% load static %}
     <div class="card" id="card003">
 
         <div class="card-body">
             <h3 class="card-title text-center" id="title001">{{ class.name }}</h3>
+            <a href="{#{% url profile class.teacher.profile %}#}">
+                <span class="badge text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-pill">
+                    {% if class.teacher.first_name != '' and class.teacher.last_name != '' %}
+                            <font size="3">{{ class.teacher.first_name }}&nbsp{{ class.teacher.last_name }}</font>
+                         {% else %}
+                            <font size="2">{{ class.teacher }}</font>
+                         {% endif %}
+                    {% if class.teacher.avatar.exists %}
+                        <img src="{% static class.teacher.avatar.last.avatar %}" class="rounded-circle" width="40" height="40">
+                    {% else %}
+                        <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" class="rounded-circle" width="40" height="40">
+                    {% endif %}
+                </span>
+            </a>
+
+            {% if class.assistants.count != 0 %}
+                <br>
+                <br>
+                {% for assistant in class.assistants.all %}
+                     <span class="badge text-secondary-emphasis bg-secondary-subtle border border-secondary-subtle rounded-pill">
+                         {% if assistant.first_name != '' and assistant.last_name != '' %}
+                             <font size="2">{{ assistant.first_name }}&nbsp{{ assistant.last_name }}</font>
+                         {% else %}
+                            <font size="2">{{ assistant }}</font>
+                         {% endif %}
+                         {% if assistant.avatar.avatar.exists %}
+                             <img src="{% static assistant.avatar.avatar %}" class="rounded-circle" width="25" height="25">
+                         {% else %}
+                             <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" class="rounded-circle" width="25" height="25">
+                         {% endif %}
+                    </span>
+                {% endfor %}
+            {% endif %}
         </div>
 
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item" {% if class.assistants.count == 0 %}id="listItem001"{% endif %}>
-                <h4> مدرس: {{ class.teacher }} </h4>
-            </li>
-            {% if class.assistants.count != 0 %}
-                <li class="list-group-item" id="listItem001">
-                    <h5> دستیار: {% for a in class.assistants.all %}
-                            {{ a }},
-                        {% endfor %}
-                    </h5>
-                </li>
-            {% endif %}
-        </ul>
-
     </div>
+
     {% if class.class_ways.count != 0 %}
         <div class="card" id="card002">
 

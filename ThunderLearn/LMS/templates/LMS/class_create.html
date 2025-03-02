@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="card bg-secondary-subtle border border-secondary" id="card_class">
+        <h4> افزودن کلاس </h4>
+        <hr>
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                <label for="id_name" class="form-label">نام کلاس</label>
+                <input type="text" name="name" maxlength="150" class="form-control" required id="id_name">
+                <div class="invalid-feedback">
+                    لطفا مقدار درستی را وارد کنید
+                    <br>
+                    <br>
+                </div>
+            {% endfor %}
+            <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+            <label class="form-check-label" for="invalidCheck">
+                قوانین سایت را قبول می کنم
+            </label>
+            <div class="invalid-feedback">
+                برای ایجاد کلاس باید قوانین را قبول کنید
+            </div>
+            <br>
+            <br>
+            <button class="btn btn-primary" type="submit">افزودن کلاس</button>
+            <a href="{% url 'teacher_dashboard' %}" class="btn btn-outline-primary">لغو</a>
+        </form>
+    </div>
+    <style>
+        #card_class {
+            margin-top: 10vh;
+            margin-bottom: 10vh;
+            margin-left: 5vw;
+            margin-right: 5vw;
+            padding: 3vh;
+        }
+    </style>
+    <script>
+        (() => {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  const forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
+    </script>
+{% endblock %}

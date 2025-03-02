@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="alert alert-primary" role="alert">
+        <h6>بخش {{ part_num }}: {{ part.title }}</h6>
+        {{ part.des }}
+    </div>
+    <div class="card" id="question">
+        <div class="card-body">
+            <h6>{{ q_num }}: {{ question.body }}</h6>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div role="group" aria-label="Basic radio toggle button group">
+                {% for choice in question.choices.all %}
+                    <input type="radio" class="btn-check" name="answer" value="{{ forloop.counter }}" id="btnradio{{ forloop.counter }}" autocomplete="off">
+                    <label class="btn btn-outline-dark" for="btnradio{{ forloop.counter }}">{{ forloop.counter }}) {{ choice.body }}</label>
+                {% endfor %}
+            </div>
+            <div class="card-footer" dir="ltr">
+                <input class="btn btn-danger" type="submit" value="تایید">
+            </div>
+        </form>
+    </div>
+    <style>
+        .alert {
+            margin: 10px;
+        }
+        #question {
+            margin: 10px;
+            padding: 10px;
+            padding-top: 0;
+        }
+        .card-footer {
+            padding: 0;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+    </style>
+{% endblock %}
+
+{{ question.body }}
+
+{{ exam.title }}

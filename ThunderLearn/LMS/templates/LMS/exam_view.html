@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="card" id="card003">
+
+        <div class="card-body">
+            <h3 class="card-title text-center" id="title001">{{ exam.title }}</h3>
+        </div>
+
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <h5> {{ exam.des }} </h5>
+            </li>
+            <li class="list-group-item">
+                <a class="btn btn-danger" href="{% url 'question_view' id=exam.id q=1 %}"> شروع آزمون </a>
+            </li>
+        </ul>
+
+    </div>
+    <style>
+        ul {
+            padding: 0;
+        }
+        #card003 {
+            margin: 0;
+            min-width: 100vw;
+            box-shadow:  14px 14px 28px #3f3f3f,
+             0px 0px 0px #ffffff;
+            border: none;
+            border-radius: 0 0 10px 10px;
+            background-image: linear-gradient(-90deg, darkslategray, darkseagreen);
+        }
+        #title001 {
+            margin-top: 1vh;
+        }
+    </style>
+{% endblock %}

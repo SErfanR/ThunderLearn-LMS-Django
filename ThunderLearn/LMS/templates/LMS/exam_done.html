@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="card bg-success-subtle border border-success text-center">
+        <div class="card-body">
+            <h5 class="text-secondary"> {{ exam.title }} </h5>
+            <br>
+            <h2 class="text-success"> آزمون با موفقیت ثبت شد! </h2>
+            <br>
+            <a href="{% url 'user_score' id %}" class="btn btn-danger border"> مشاهده نتیجه </a>
+        </div>
+    </div>
+    <style>
+        .card {
+            padding-top: 20vh;
+            padding-bottom: 20vh;
+            margin-top: 10vh;
+            margin-left: 5vw;
+            margin-right: 5vw;
+        }
+    </style>
+{% endblock %}

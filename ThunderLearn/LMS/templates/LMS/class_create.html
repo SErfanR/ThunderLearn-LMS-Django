@@ -8,6 +8,13 @@
             {% for field in form %}
                 <label for="id_name" class="form-label">نام کلاس</label>
                 <input type="text" name="name" maxlength="150" class="form-control" required id="id_name">
+                {% if field.errors %}
+                    {% if field.errors|striptags == 'Classroom with this Name already exists.' %}
+                        <div class="alert alert-danger">کلاسی با این نام وجود دارد.</div>
+                    {% else %}
+                        <div class="alert alert-danger">{{ field.errors|striptags }}</div>
+                    {% endif %}
+                {% endif %}
                 <div class="invalid-feedback">
                     لطفا مقدار درستی را وارد کنید
                     <br>

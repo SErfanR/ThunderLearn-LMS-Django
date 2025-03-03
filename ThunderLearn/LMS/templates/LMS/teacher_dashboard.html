@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% include 'teacher-offcanvas.html' %}
 <!--    <p class="bg-secondary">{{ user.teacher_class.count }}</p>-->
 <!--    <p class="bg-secondary">{{ user.user_exams.count }}</p>-->
     <div class="card bg-secondary-subtle border border-secondary text-center" id="card_classes">
@@ -61,7 +62,7 @@
         #card_classes {
             margin-top: 10vh;
             margin-bottom: 10vh;
-            margin-left: 5vw;
+            margin-left: 70px;
             margin-right: 5vw;
             padding-top: 1vh;
         }

@@ -13,4 +13,9 @@ urlpatterns = [
     path('teacher/class/<int:id>/', views.TeacherClassView.as_view(), name='teacher_class'),
     path('teacher/class/delete/<int:pk>/', views.ClassDeleteView.as_view(), name='class_delete'),
     path('teacher/class/create/', views.ClassCreateView.as_view(), name='class_create'),
+    path('class/<int:id>/join/', views.ClassJoinView.as_view(), name='class_join'),
+    path('teacher/exam/', views.TeacherExamListView.as_view(), name='teacher_exams'),
+    path('teacher/exam/delete/<int:pk>/', views.ExamDeleteView.as_view(), name='exam_delete'),
+    path('teacher/exam/create/', views.ExamCreateView.as_view(), name='exam_create'),
+    path('teacher/exam/<int:pk>/', views.TeacherExamDetailView.as_view(), name='teacher_exam'),
 ]

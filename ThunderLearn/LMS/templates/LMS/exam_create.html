@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="card bg-secondary-subtle border border-secondary" id="card_class">
+        <h4> افزودن آزمون </h4>
+        <hr>
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                {% if forloop.counter == 1 %}
+                    <label for="id_title" class="form-label">نام آزمون</label>
+                    <input type="text" name="title" maxlength="50" class="form-control" required id="id_title">
+                {% elif forloop.counter == 2 %}
+                    <label for="id_des" class="form-label">توضیحات</label>
+                    <textarea name="des" cols="40" rows="10" class="form-control" required id="id_des"></textarea>
+                {% else %}
+                    <label for="id_classrooms" class="form-label">
+                        کلاس ها
+                        (<small> ctrl را نگه دارید و انتخاب کنید </small>)
+                    </label>
+                    <select name="classrooms" class="form-select" id="id_classrooms" size="3" multiple
+                            aria-label="size 3 multiple select">
+                        {% for class in user.teacher_class.all %}
+                            <option value="{{ class.pk }}">{{ class.name }}</option>
+                        {% endfor %}
+                    </select>
+                {% endif %}
+                {% if field.errors %}
+                    <div class="alert alert-danger">{{ field.errors|striptags }}</div>
+                {% endif %}
+            {% endfor %}
+            <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+            <label class="form-check-label" for="invalidCheck">
+                قوانین سایت را قبول می کنم
+            </label>
+            <div class="invalid-feedback">
+                برای ایجاد آزمون باید قوانین را قبول کنید
+            </div>
+            <br>
+            <br>
+            <button class="btn btn-primary" type="submit">افزودن آزمون</button>
+            <a href="{% url 'teacher_exams' %}" class="btn btn-outline-primary">لغو</a>
+        </form>
+    </div>
+    <style>
+        #card_class {
+            margin-top: 10vh;
+            margin-bottom: 10vh;
+            margin-left: 5vw;
+            margin-right: 5vw;
+            padding: 3vh;
+        }
+    </style>
+    <script>
+        (() => {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  const forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
+    </script>
+{% endblock %}

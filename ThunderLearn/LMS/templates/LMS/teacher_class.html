@@ -1,4 +1,74 @@
 {% extends "base.html" %}
 {% block content %}
-{{ class }}
+{% include 'teacher-offcanvas.html' %}
+    <div class="card bg-secondary-subtle border border-secondary text-center" id="card_students">
+        <div class="card-body">
+
+            <h4 class="text-dark lalezar">
+                <span id="title">دانش آموزان کلاس
+                {{ class.name }} </span>
+                <br>
+            </h4>
+
+            <table class="table" dir="ltr">
+
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">نام</th>
+                        <th scope="col">نام خانوادگی</th>
+                        <th scope="col">نام کاربری</th>
+                        <th scope="col">پروفایل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for student in class.students.all %}
+                    <tr>
+                        <th scope="row">
+                            {{ forloop.counter }}
+                        </th>
+                        <th class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                            {{ student.first_name }}
+                        </th>
+                        <th class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                            {{ student.last_name }}
+                        </th>
+                        <td class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                            {{ student }}
+                        </td>
+                        <td class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                            <a href="" class="text-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/>
+                                    <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/>
+                                </svg>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    <style>
+        #card_classes, #card_students {
+            margin-top: 10vh;
+            margin-bottom: 10vh;
+            margin-right: 70px;
+            margin-left: 5vw;
+            padding-top: 1vh;
+        }
+        #title {
+            background: -webkit-linear-gradient(45deg, #09009f, #009973 40%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: xx-large;
+            padding-bottom: 5px;
+        }
+        #title2 {
+            font-size: xx-large;
+            padding-bottom: 5px;
+        }
+    </style>
 {% endblock %}

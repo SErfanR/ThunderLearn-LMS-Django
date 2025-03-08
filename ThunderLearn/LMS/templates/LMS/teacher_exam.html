@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block content %}
+{% include 'teacher-offcanvas.html' %}
+    <div class="card bg-secondary-subtle border border-secondary text-center" id="card_classes">
+        <div class="card-body">
+            <h4 class="text-dark lalezar" id="title">بخش های {{ exam.title }}</h4>
+
+            <table class="table table-hover rounded" dir="ltr" id="table">
+
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">عنوان</th>
+                        <th scope="col">مشاهده و ویرایش</th>
+                        <th scope="col">حذف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for part in exam.parts.all %}
+                    <tr>
+                        <th scope="row">
+                            {{ forloop.counter }}
+                        </th>
+                        <th class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                            {{ part.title }}
+                        </th>
+                        <td class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                            <a href="#part_{{ forloop.counter }}" class="btn btn-sm btn-h"  style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                </svg>
+                            </a>
+                        </td>
+                        <td class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                            <a href="" class="btn btn-sm btn-h" style="background: linear-gradient(135deg, #ff416c, #ff4b2b); color: white;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                                </svg>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="5" class="text-center">
+                        <a href="" class="btn btn-lg btn-h" style="background: linear-gradient(45deg, #09009f, #00ff95); color: white;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+                            </svg>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    {% for part in exam.parts.all %}
+        {% with number=forloop.counter %}
+            <div class="card bg-secondary-subtle border border-secondary text-center" id="card_classes">
+                <div class="card-body" id="part_{{ forloop.counter }}">
+                    <h4 class="text-dark lalezar" id="title">سوالات بخش {{ part.title }}</h4>
+                    <form method="post" target="">
+                        {% csrf_token %}
+                        <input type="text" class="form-control" value="{{ part.title }}">
+                        <div class="d-flex">
+                            <textarea class="form-control" style="height: 20px;">{{ part.des }}</textarea>
+                            &nbsp;
+                            <input type="submit" value="تایید" class="btn btn-sm btn-h" style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
+                        </div>
+                    </form>
+                    <br>
+
+                    <table class="table table-hover rounded" dir="ltr" id="table">
+
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">عنوان</th>
+                                <th scope="col">حذف</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for question in part.questions.all %}
+                            <tr>
+                                <th scope="row">
+                                    {{ forloop.counter }}
+                                </th>
+                                <th class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                                      <div class="accordion" id="accordionExample" dir="ltr">
+                                          <div class="accordion-item" dir="rtl">
+                                              <h2 class="accordion-header">
+                                                  <button class="accordion-button collapsed
+                                                  bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}"
+                                                          type="button" data-bs-toggle="collapse"
+                                                          data-bs-target="#collapse_{{ number }}_{{ forloop.counter }}"
+                                                          aria-expanded="false">
+                                                      {% if question.body|length > 30 %}
+                                                          {{ question.body|slice:30 }} ...
+                                                      {% else %}
+                                                          {{ question.body }}
+                                                      {% endif %}
+                                                      &nbsp;
+                                                  </button>
+                                              </h2>
+                                              <div id="collapse_{{ number }}_{{ forloop.counter }}"
+                                                 class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                                  <div class="accordion-body text-end">
+                                                      <form method="post" target="" class="d-flex">
+                                                          {% csrf_token %}
+                                                          <textarea class="form-control" style="height: 20px;">{{ question.body }}</textarea>
+                                                          &nbsp;
+                                                          <input type="submit" value="تایید" class="btn btn-sm btn-h" style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
+                                                      </form>
+                                                      <br>
+                                                      {% for choice in question.choices.all %}
+                                                          <form method="post" target="" class="d-flex">
+                                                              {% csrf_token %}
+                                                              <a class="btn" style="cursor: default;">{{ forloop.counter }})</a>
+                                                              <input type="text" class="form-control" value="{{ choice.body }}">
+                                                              &nbsp;
+                                                              <input type="submit" value="تایید" class="btn btn-sm btn-h" style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
+                                                              &nbsp;
+                                                              <a class="btn btn-h" href="" style="background: linear-gradient(135deg, #ff416c, #ff4b2b); color: white;">
+                                                                  حذف
+                                                              </a>
+                                                          </form>
+                                                          <br>
+                                                      {% endfor %}
+                                                      <form method="post" target="" class="d-flex">
+                                                          {% csrf_token %}
+                                                          <a class="btn btn-h disabled">{{ question.choices.count|add:"1" }})</a>
+                                                          <input type="text" class="form-control">
+                                                          &nbsp;
+                                                          <input type="submit" value="افزودن" class="btn btn-sm btn-h" style="background: linear-gradient(45deg, #09009f, #00ff95); color: white;">
+                                                      </form>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                    </div>
+                                </th>
+                                <td class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                                    <a href="" class="btn btn-sm btn-h" style="background: linear-gradient(135deg, #ff416c, #ff4b2b); color: white;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                                        </svg>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                <a href="" class="btn btn-lg btn-h" style="background: linear-gradient(45deg, #09009f, #00ff95); color: white;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        {% endwith %}
+    {% endfor %}
+    <style>
+        #card_classes {
+            margin-top: 10vh;
+            margin-bottom: 10vh;
+            margin-right: 70px;
+            margin-left: 5vw;
+            padding-top: 1vh;
+        }
+        #title {
+            background: -webkit-linear-gradient(45deg, #09009f, #00ff95 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: xx-large;
+            padding-bottom: 5px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: 0.4s ease-out;
+        }
+        #table{
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .btn-h{
+            border: none;
+            transition: 0.4s ease-out;
+        }
+        .btn-h:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+{% endblock %}

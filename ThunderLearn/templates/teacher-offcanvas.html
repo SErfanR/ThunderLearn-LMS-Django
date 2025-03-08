@@ -3,23 +3,36 @@
         <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
     </svg>
 </a>
-<div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel" dir="ltr">
+<div class="offcanvas offcanvas-end border border-dark-subtle" data-bs-scroll="true" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel" dir="ltr">
 
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasLabel">سامانه صاعقه</h5>
+        <h4 class="offcanvas-title lalezar" id="offcanvasLabel">پنل مدیریتی معلم</h4>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
 
-    <div class="offcanvas-body">
-
+    <div class="offcanvas-body" dir="rtl">
+        <div>
+            <a class="btn" href="{% url 'teacher_dashboard' %}"> داشبورد (کلاس ها) </a><br>
+            <a class="btn" href="{% url 'teacher_exams' %}"> آزمون ها </a><br>
+        </div>
     </div>
 </div>
 <style>
+    #offcanvas {
+       border-radius: 15px 0 0 15px;
+       top: 11vh;
+       height: 87vh;
+       max-width: 95vw;
+       background: linear-gradient(90deg, white, lightgray);
+       opacity: 90%;
+       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
     #offcanvas_btn {
         position: fixed;
-        left: 1vw;
+        right: 1vw;
         top: 30vh;
         z-index: 100;
         cursor: pointer;
+        background: -webkit-linear-gradient(45deg, #09009f, #00ff95 80%);
     }
 </style>

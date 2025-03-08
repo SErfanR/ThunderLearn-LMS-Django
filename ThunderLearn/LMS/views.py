@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.views import View
 from django.views.generic.edit import DeleteView, CreateView
+from django.views.generic import ListView, DetailView
 import json
 
 @login_required
@@ -207,6 +208,9 @@ class TeacherClassView(View):
         return redirect('dashboard')
 
     def get(self, request, id):
+        exams = self.this_class.class_exams.all()
+        index = min(len(exams), 5)
+        exams = exams[len(exams)-index:]
         return render(request, 'LMS/teacher_class.html', {'class': self.this_class})
 
 
@@ -249,3 +253,96 @@ class ClassCreateView(CreateView):
         form.instance.teacher = self.request.user
         messages.success(self.request, 'کلاس با موفقیت اضافه شد')
         return super(ClassCreateView, self).form_valid(form)
+
+
+class ClassJoinView(LoginRequiredMixin, View):
+    def setup(self, request, *args, **kwargs):
+        self.this_class = Classroom.objects.get(id=kwargs['id'])
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.groups.filter(name="Students").exists():
+            if not self.this_class.students.filter(id=request.user.id).exists():
+                return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get(self, request, id):
+        return HttpResponse(f'join class {id}')
+
+
+class TeacherExamListView(LoginRequiredMixin, ListView):
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.groups.filter(name="Teacher").exists:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    model = Exam
+    template_name = 'LMS/teacher_exams.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['exams'] = Exam.objects.filter(author=self.request.user)
+        return context
+
+
+class TeacherExamDetailView(LoginRequiredMixin, DetailView):
+    def setup(self, request, *args, **kwargs):
+        self.this_exam = Exam.objects.get(pk=kwargs['pk'])
+        super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.this_exam.author == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    model = Exam
+    context_object_name = 'exam'
+    template_name = 'LMS/teacher_exam.html'
+
+
+class ExamDeleteView(LoginRequiredMixin, DeleteView):
+    def setup(self, request, *args, **kwargs):
+        self.this_exam = Exam.objects.get(pk=kwargs['pk'])
+        super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.this_exam.author == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    model = Exam
+    context_object_name = 'exam'
+    success_url = reverse_lazy('teacher_exams')
+    template_name = 'LMS/exam_confirm_delete.html'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'آزمون با موفقیت حذف شد')
+        return super(ExamDeleteView, self).form_valid(form)
+
+
+class ExamCreateView(LoginRequiredMixin, CreateView):
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.groups.filter(name="Teacher").exists:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    model = Exam
+    fields = ['title', 'des', 'classrooms']
+    success_url = reverse_lazy('teacher_exams')
+    template_name = 'LMS/exam_create.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        messages.success(self.request, 'آزمون با موفقیت ایجاد شد')
+        return super(ExamCreateView, self).form_valid(form)
+

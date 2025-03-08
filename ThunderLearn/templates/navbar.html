@@ -1,5 +1,5 @@
-<nav class="navbar navbar-fixed-top navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
+<nav class="navbar navbar-fixed-top navbar-expand-lg bg-body-tertiary border border-dark-subtle" id="navbar">
+    <div class="container-fluid" id="navbar-container">
         <h3>
             <a class="navbar-brand" href="/">صاعقه</a>
         </h3>
@@ -25,7 +25,7 @@
                                 <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" alt="" width="32" height="32" class="rounded-circle me-2">
                             {% endif %}
                         </a>
-                        <ul class="dropdown-menu text-small shadow" style="" dir="rtl">
+                        <ul class="dropdown-menu text-small shadow" dir="rtl">
                             <li><a class="dropdown-item" href="#">تنظیمات</a></li>
                             <li><a class="dropdown-item" href="#">پروفایل</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -47,11 +47,25 @@
         </div>
     </div>
 </nav>
-<!--<style>-->
-<!--  .navbar{-->
-<!--    position:fixed;-->
-<!--    width:100%;-->
-<!--    z-index: 1000000;-->
-<!--    top:0;-->
-<!--  }-->
-<!--</style>-->
+<nav class="navbar navbar-fixed-top navbar-expand-lg bg-fdh">
+    <div class="container-fluid">
+        <h3>
+            <a class="navbar-brand" href="/"></a>
+        </h3>
+    </div>
+</nav>
+<style>
+    #navbar {
+        position:fixed;
+        width:100%;
+        z-index: 1000000;
+        top:0;
+        min-height: 9vh;
+        background: linear-gradient(90deg, white, lightgray);
+        opacity: 90%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    #navbar-container {
+        max-height: 9vh;
+    }
+</style>

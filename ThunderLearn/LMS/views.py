@@ -462,3 +462,27 @@ class ChoiceDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('teacher_exam', args=[self.get_object().question.part.exam.pk])
+
+
+class ChoiceCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Choice
+    fields = ['body']
+    success_message = 'گزینه با موفقیت اضافه شد'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Question, pk=self.kwargs['pk'])
+
+    def dispatch(self, request, *args, **kwargs):
+        self.question = self.get_object()
+        if self.question.part.exam.author == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def form_valid(self, form):
+        form.instance.question = self.question
+        return super(ChoiceCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('teacher_exam', args=[self.question.part.exam.pk])

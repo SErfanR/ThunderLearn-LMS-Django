@@ -2,8 +2,17 @@
     {% for message in messages %}
         {% if message.level == 40 %}
             <div class="alert alert-danger" role="alert">
-                {{ message}}
+                {{ message }}
+            </div>
+        {% else %}
+            <div class="alert alert-success" role="alert">
+                {{ message }}
             </div>
         {% endif %}
     {% endfor %}
+    <style>
+        .alert {
+            margin: 10px;
+        }
+    </style>
 {% endif %}

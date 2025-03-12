@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Classroom, Way, Exam, UserAnswer, UserScore, ExamAnswer, Part, Question
+from .models import Classroom, Way, Exam, UserAnswer, UserScore, ExamAnswer, Part, Question, Choice
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.http import HttpResponse
@@ -441,3 +441,24 @@ class QuestionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         return reverse('teacher_exam', args=[self.part.exam.pk])
+
+
+class ChoiceDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = Choice
+    context_object_name = 'choice'
+    template_name = 'LMS/choice_confirm_delete.html'
+    success_message = 'گزینه با موفقیت حذف شد'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Choice, pk=self.kwargs['pk'])
+
+    def dispatch(self, request, *args, **kwargs):
+        choice = self.get_object()
+        if choice.question.part.exam.author == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get_success_url(self):
+        return reverse('teacher_exam', args=[self.get_object().question.part.exam.pk])

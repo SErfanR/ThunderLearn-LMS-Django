@@ -22,4 +22,5 @@ urlpatterns = [
     path('teacher/<int:pk>/part/create/', views.PartCreateView.as_view(), name='part_create'),
     path('teacher/question/delete/<int:pk>/', views.QuestionDeleteView.as_view(), name='question_delete'),
     path('teacher/<int:pk>/question/create/', views.QuestionCreateView.as_view(), name='question_create'),
+    path('teacher/choice/delete/<int:pk>/', views.ChoiceDeleteView.as_view(), name='choice_delete'),
 ]

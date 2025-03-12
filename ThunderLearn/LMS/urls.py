@@ -18,4 +18,8 @@ urlpatterns = [
     path('teacher/exam/delete/<int:pk>/', views.ExamDeleteView.as_view(), name='exam_delete'),
     path('teacher/exam/create/', views.ExamCreateView.as_view(), name='exam_create'),
     path('teacher/exam/<int:pk>/', views.TeacherExamDetailView.as_view(), name='teacher_exam'),
+    path('teacher/part/delete/<int:pk>/', views.PartDeleteView.as_view(), name='part_delete'),
+    path('teacher/<int:pk>/part/create/', views.PartCreateView.as_view(), name='part_create'),
+    path('teacher/question/delete/<int:pk>/', views.QuestionDeleteView.as_view(), name='question_delete'),
+    path('teacher/<int:pk>/question/create/', views.QuestionCreateView.as_view(), name='question_create'),
 ]

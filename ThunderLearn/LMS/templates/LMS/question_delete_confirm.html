@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="alert alert-danger" id="alert">
+        <form method="post">
+            {% csrf_token %}
+            <h5 class="alert-heading"> حذف سوال </h5>
+            <h4> آیا از حذف سوال
+                "{% if question.body|length > 30 %}
+                    {{ question.body|slice:30 }} ...
+                {% else %}
+                    {{ question.body }}
+                {% endif %}"
+                مطمئن هستید؟ </h4>
+            <p> با حذف این سوال تمام موارد مربوط به آن حذف می شود </p>
+            <hr>
+            <input type="submit" value="حذف" class="btn btn-danger">
+            <a href="{% url 'teacher_exams' %}" class="btn btn-primary">خیر، بازگشت</a>
+        </form>
+    </div>
+    <style>
+        #alert {
+            margin-top: 10vh;
+            margin-bottom: 10vh;
+            margin-left: 5vw;
+            margin-right: 5vw;
+            padding: 2vh;
+        }
+    </style>
+{% endblock %}

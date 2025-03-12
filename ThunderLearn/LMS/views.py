@@ -1,13 +1,15 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
-from .models import Classroom, Way, Exam, UserAnswer, UserScore, ExamAnswer
+from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Classroom, Way, Exam, UserAnswer, UserScore, ExamAnswer, Part, Question
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.views import View
 from django.views.generic.edit import DeleteView, CreateView
 from django.views.generic import ListView, DetailView
+from django.urls import reverse
 import json
 
 @login_required
@@ -149,29 +151,33 @@ class UserScoreView(View):
         user_answers_a = user_answers.answers  # answers field of user_answers
         user_answers = json.loads(user_answers_a)  # converting it to list
 
+        # calculating the score:
+        questions_number = len(exam_answers)
+        score_int = 0  # default score is 0
+
+        for i in range(len(exam_answers)):
+            # if the question is removed from the exam:
+            if int(exam_answers[i]) == 0:
+                questions_number -= 1
+            # if answer is true and is not 0 (not answered):
+            elif int(exam_answers[i]) == int(user_answers[i]) and int(user_answers[i]) != 0:
+                score_int += 3
+            # if the answer is blank:
+            elif int(user_answers[i]) == 0:
+                pass
+            # if the answer is wrong:
+            else:
+                pass
+
+        score_p = score_int / (3 * questions_number) * 100
+
         if UserScore.objects.filter(exam=self.this_exam, user=request.user).exists():
             user_score = UserScore.objects.filter(exam=self.this_exam, user=request.user).last()
+            # updating the score
+            user_score.score = score_p
+            user_score.save()
 
         else:
-            # calculating the score:
-            questions_number = len(exam_answers)
-            score_int = 0  # default score is 0
-
-            for i in range(len(exam_answers)):
-                # if the question is removed from the exam:
-                if int(exam_answers[i]) == 0:
-                    questions_number -= 1
-                # if answer is true and is not 0 (not answered):
-                elif int(exam_answers[i]) == int(user_answers[i]) and int(user_answers[i]) != 0:
-                    score_int += 3
-                # if the answer is blank:
-                elif int(user_answers[i]) == 0:
-                    pass
-                # if the answer is wrong:
-                else:
-                    pass
-
-            score_p = score_int / (3 * questions_number) * 100
             # creating Score
             user_score = UserScore.objects.create(exam=self.this_exam, user=request.user, score=score_p)
 
@@ -346,3 +352,92 @@ class ExamCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, 'آزمون با موفقیت ایجاد شد')
         return super(ExamCreateView, self).form_valid(form)
 
+
+class PartDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = Part
+    context_object_name = 'part'
+    template_name = 'LMS/part_delete_confirm.html'
+    success_message = 'بخش با موفقیت حذف شد'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Part, pk=self.kwargs['pk'])
+
+    def dispatch(self, request, *args, **kwargs):
+        part = self.get_object()
+        if part.exam.author == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get_success_url(self):
+        return reverse('teacher_exam', args=[self.get_object().exam.pk])
+
+
+class PartCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Part
+    fields = ['title', 'des']
+    success_message = 'بخش با موفقیت اضافه شد'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Exam, pk=self.kwargs['pk'])
+
+    def dispatch(self, request, *args, **kwargs):
+        self.exam = self.get_object()
+        if self.exam.author == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def form_valid(self, form):
+        form.instance.exam = self.exam
+        return super(PartCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('teacher_exam', args=[self.exam.pk])
+
+
+class QuestionDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = Question
+    context_object_name = 'question'
+    template_name = 'LMS/question_delete_confirm.html'
+    success_message = 'سوال با موفقیت حذف شد'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Question, pk=self.kwargs['pk'])
+
+    def dispatch(self, request, *args, **kwargs):
+        question = self.get_object()
+        if question.part.exam.author == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get_success_url(self):
+        return reverse('teacher_exam', args=[self.get_object().part.exam.pk])
+
+
+class QuestionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Question
+    fields = ['body']
+    success_message = 'سوال با موفقیت اضافه شد'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Part, pk=self.kwargs['pk'])
+
+    def dispatch(self, request, *args, **kwargs):
+        self.part = self.get_object()
+        if self.part.exam.author == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def form_valid(self, form):
+        form.instance.part = self.part
+        return super(QuestionCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('teacher_exam', args=[self.part.exam.pk])

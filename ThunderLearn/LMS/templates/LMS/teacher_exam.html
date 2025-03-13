@@ -147,7 +147,7 @@
                                                       <form method="post" action="{% url 'choice_create' question.pk %}" class="d-flex">
                                                           {% csrf_token %}
                                                           <a class="btn btn-h disabled">{{ question.choices.count|add:"1" }})</a>
-                                                          <input type="text" name="body" class="form-control">
+                                                          <input type="text" name="body" class="form-control" required>
                                                           &nbsp;
                                                           <input type="submit" value="افزودن" class="btn btn-sm btn-h" style="background: linear-gradient(45deg, #09009f, #00ff95); color: white;">
                                                       </form>

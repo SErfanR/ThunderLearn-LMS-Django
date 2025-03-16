@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.views import View
 from django.views.generic.edit import DeleteView, CreateView
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, UpdateView
 from django.urls import reverse
 import json
 
@@ -486,3 +486,23 @@ class ChoiceCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         return reverse('teacher_exam', args=[self.question.part.exam.pk])
+
+
+class ChoiceUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Choice
+    fields = ['body']
+    success_message = 'گزینه با موفقیت تغییر کرد'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Choice, pk=self.kwargs['pk'])
+
+    def dispatch(self, request, *args, **kwargs):
+        self.choice = self.get_object()
+        if self.choice.question.part.exam.author == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get_success_url(self):
+        return reverse('teacher_exam', args=[self.choice.question.part.exam.pk])

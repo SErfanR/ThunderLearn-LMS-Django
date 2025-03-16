@@ -131,10 +131,10 @@
                                                       </form>
                                                       <br>
                                                       {% for choice in question.choices.all %}
-                                                          <form method="post" target="" class="d-flex">
+                                                          <form method="post" action="{% url 'choice_update' choice.pk %}" class="d-flex">
                                                               {% csrf_token %}
                                                               <a class="btn" style="cursor: default;">{{ forloop.counter }})</a>
-                                                              <input type="text" class="form-control" value="{{ choice.body }}">
+                                                              <input type="text" class="form-control" value="{{ choice.body }}" name="body">
                                                               &nbsp;
                                                               <input type="submit" value="تایید" class="btn btn-sm btn-h" style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
                                                               &nbsp;

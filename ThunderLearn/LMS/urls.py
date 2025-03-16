@@ -33,10 +33,12 @@ urlpatterns = [
     # part-related URLs
     path('teacher/part/delete/<int:pk>/', views.PartDeleteView.as_view(), name='part_delete'),
     path('teacher/<int:pk>/part/create/', views.PartCreateView.as_view(), name='part_create'),
+    path('teacher/part/<int:pk>/update/', views.PartUpdateView.as_view(), name='part_update'),
 
     # question-related URLs
     path('teacher/question/delete/<int:pk>/', views.QuestionDeleteView.as_view(), name='question_delete'),
     path('teacher/<int:pk>/question/create/', views.QuestionCreateView.as_view(), name='question_create'),
+    path('teacher/question/<int:pk>/update/', views.QuestionUpdateView.as_view(), name='question_update'),
 
     # choice-related URLs
     path('teacher/choice/delete/<int:pk>/', views.ChoiceDeleteView.as_view(), name='choice_delete'),

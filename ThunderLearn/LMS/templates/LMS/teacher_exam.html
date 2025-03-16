@@ -77,11 +77,11 @@
             <div class="card bg-secondary-subtle border border-secondary text-center" id="card_classes">
                 <div class="card-body" id="part_{{ forloop.counter }}">
                     <h4 class="text-dark lalezar" id="title">سوالات بخش {{ part.title }}</h4>
-                    <form method="post" target="">
+                    <form method="post" action="{% url 'part_update' part.pk %}">
                         {% csrf_token %}
-                        <input type="text" class="form-control" value="{{ part.title }}">
+                        <input type="text" class="form-control" value="{{ part.title }}" name="title">
                         <div class="d-flex">
-                            <textarea class="form-control" style="height: 20px;">{{ part.des }}</textarea>
+                            <textarea class="form-control" style="height: 20px;" name="des">{{ part.des }}</textarea>
                             &nbsp;
                             <input type="submit" value="تایید" class="btn btn-sm btn-h" style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
                         </div>
@@ -123,9 +123,9 @@
                                               <div id="collapse_{{ number }}_{{ forloop.counter }}"
                                                  class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                                                   <div class="accordion-body text-end">
-                                                      <form method="post" target="" class="d-flex">
+                                                      <form method="post" action="{% url 'question_update' question.pk %}" class="d-flex">
                                                           {% csrf_token %}
-                                                          <textarea class="form-control" style="height: 20px;">{{ question.body }}</textarea>
+                                                          <textarea class="form-control" style="height: 20px;" name="body">{{ question.body }}</textarea>
                                                           &nbsp;
                                                           <input type="submit" value="تایید" class="btn btn-sm btn-h" style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
                                                       </form>

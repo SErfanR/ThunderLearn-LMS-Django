@@ -398,6 +398,26 @@ class PartCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return reverse('teacher_exam', args=[self.exam.pk])
 
 
+class PartUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Part
+    fields = ['title', 'des']
+    success_message = 'بخش با موفقیت تغییر کرد'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Part, pk=self.kwargs['pk'])
+
+    def dispatch(self, request, *args, **kwargs):
+        self.part = self.get_object()
+        if self.part.exam.author == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get_success_url(self):
+        return reverse('teacher_exam', args=[self.part.exam.pk])
+
+
 class QuestionDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Question
     context_object_name = 'question'
@@ -441,6 +461,26 @@ class QuestionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         return reverse('teacher_exam', args=[self.part.exam.pk])
+
+
+class QuestionUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Question
+    fields = ['body']
+    success_message = 'سوال با موفقیت تغییر کرد'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Question, pk=self.kwargs['pk'])
+
+    def dispatch(self, request, *args, **kwargs):
+        self.question = self.get_object()
+        if self.question.part.exam.author == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get_success_url(self):
+        return reverse('teacher_exam', args=[self.question.part.exam.pk])
 
 
 class ChoiceDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):

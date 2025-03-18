@@ -1,18 +1,37 @@
 {% if messages %}
     {% for message in messages %}
+        <div class="alert message
         {% if message.level == 40 %}
-            <div class="alert alert-danger" role="alert">
-                {{ message }}
-            </div>
-        {% else %}
-            <div class="alert alert-success" role="alert">
-                {{ message }}
-            </div>
-        {% endif %}
+        alert-danger
+        {% elif message.level == 30 %}
+        alert-warning
+        {% elif message.level == 25 %}
+        alert-success
+        {% elif message.level == 20 %}
+        alert-info
+        {% elif message.level == 10 %}
+        alert-secondary
+        {% endif %}"
+             role="alert">
+
+            <button type="button" class="btn-close" aria-label="Close" onclick="closeMessage(this)"></button>
+            {{ message }}
+        </div>
     {% endfor %}
     <style>
         .alert {
             margin: 10px;
         }
+        .message {
+            position: fixed;
+            top: 11vh;
+            z-index: 100;
+        }
     </style>
+    <script>
+        function closeMessage(button) {
+            // Traverse to the parent element (the message div) and hide it
+            button.parentElement.style.display = "none";
+        }
+    </script>
 {% endif %}

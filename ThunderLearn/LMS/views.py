@@ -531,18 +531,41 @@ class ChoiceCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 class ChoiceUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Choice
     fields = ['body']
-    success_message = 'گزینه با موفقیت تغییر کرد'
+    success_message = 'گزینه با موفقیت تغییر کرد'  # message to show after changing the choice
+
+    def get_queryset(self):
+        """
+        Using select_related() for a better performance and only() for just getting the necessary fields of Choice and ...
+        """
+        return Choice.objects.select_related('question__part__exam__author'
+                                             ).only('body','question__part__exam__author__id')
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Choice, pk=self.kwargs['pk'])
+        """
+        Putting the queryset from get_queryset() and finding the true Choice
+        by get_object_or_404() and returning 404 if it does not exist.
+        """
+        queryset = queryset or self.get_queryset()
+        return get_object_or_404(queryset, pk=self.kwargs['pk'])
 
     def dispatch(self, request, *args, **kwargs):
+        """
+        dispatch method for checking if user has permissions to user this page or not and
+        Putting self.get_object() data on self.choice for just calling it once in everywhere of this CBV.
+        """
         self.choice = self.get_object()
-        if self.choice.question.part.exam.author == request.user:
-            return super().dispatch(request, *args, **kwargs)
+        if not self.is_user_authorized():
+            messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+            return redirect('dashboard')
+        return super().dispatch(request, *args, **kwargs)
 
-        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
-        return redirect('dashboard')
+    def is_user_authorized(self):
+        return self.choice.question.part.exam.author == self.request.user
 
     def get_success_url(self):
-        return reverse('teacher_exam', args=[self.choice.question.part.exam.pk])
+        """
+        Returning to exam page and exactly this choice related question part by fragment
+        """
+        url = reverse_lazy('teacher_exam', args=[self.choice.question.part.exam.pk])
+        fragment = self.choice.question.pk
+        return f'{url}#question{fragment}'

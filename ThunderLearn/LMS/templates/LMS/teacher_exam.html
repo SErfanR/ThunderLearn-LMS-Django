@@ -99,7 +99,7 @@
                         </thead>
                         <tbody>
                         {% for question in part.questions.all %}
-                            <tr>
+                            <tr id="question{{ question.pk }}">
                                 <th scope="row">
                                     {{ forloop.counter }}
                                 </th>

@@ -535,23 +535,22 @@ class ChoiceUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get_queryset(self):
         """
-        Using select_related() for a better performance and only() for just getting the necessary fields of Choice and ...
+        Optimize database queries by using select_related and only to fetch necessary fields.
         """
         return Choice.objects.select_related('question__part__exam__author'
                                              ).only('body','question__part__exam__author__id')
 
     def get_object(self, queryset=None):
         """
-        Putting the queryset from get_queryset() and finding the true Choice
-        by get_object_or_404() and returning 404 if it does not exist.
+        Retrieve the Choice object using an optimized queryset and raising 404 if it does not exist.
         """
         queryset = queryset or self.get_queryset()
         return get_object_or_404(queryset, pk=self.kwargs['pk'])
 
     def dispatch(self, request, *args, **kwargs):
         """
-        dispatch method for checking if user has permissions to user this page or not and
-        Putting self.get_object() data on self.choice for just calling it once in everywhere of this CBV.
+        Check if the user has permission to access this page.
+        Store the Choice object in self.choice to avoid redundant calls.
         """
         self.choice = self.get_object()
         if not self.is_user_authorized():
@@ -560,11 +559,26 @@ class ChoiceUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
     def is_user_authorized(self):
+        """
+        Check if the user is the author of the exam related to this choice.
+        """
         return self.choice.question.part.exam.author == self.request.user
+
+    def form_valid(self, form):
+        """
+        Check if the new body is the same as the current body.
+        If they are the same, show an error message and do not save the changes.
+        """
+        new_body = form.cleaned_data.get('body')
+        if new_body == self.choice.body:
+            messages.error(self.request, 'متن گزینه تغییری نکرده است')
+            url = self.get_success_url()
+            return redirect(url)
+        return super().form_valid(form)
 
     def get_success_url(self):
         """
-        Returning to exam page and exactly this choice related question part by fragment
+        Redirect to the exam page with a fragment pointing to the related question.
         """
         url = reverse_lazy('teacher_exam', args=[self.choice.question.part.exam.pk])
         fragment = self.choice.question.pk

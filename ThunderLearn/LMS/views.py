@@ -12,6 +12,8 @@ from django.views.generic import ListView, DetailView, UpdateView
 from django.urls import reverse
 import json
 
+from .default_views import DefaultUpdateView
+
 @login_required
 def dashboard(request):
     if request.user.groups.filter(name='Students').exists():
@@ -398,24 +400,23 @@ class PartCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return reverse('teacher_exam', args=[self.exam.pk])
 
 
-class PartUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class PartUpdateView(DefaultUpdateView):
     model = Part
     fields = ['title', 'des']
-    success_message = 'بخش با موفقیت تغییر کرد'
+    success_message = 'بخش با موفقیت تغییر کرد'  # message to show after changing the choice
+    error_message = 'بخش تغییری نکرده است'       # message if the body is not changed
 
-    def get_object(self, queryset=None):
-        return get_object_or_404(Part, pk=self.kwargs['pk'])
+    def get_queryset(self):
+        return Part.objects.select_related('exam__author').only('title', 'des', 'exam__author__id')
 
-    def dispatch(self, request, *args, **kwargs):
-        self.part = self.get_object()
-        if self.part.exam.author == request.user:
-            return super().dispatch(request, *args, **kwargs)
+    def is_user_authorized(self):
+        return self.object.exam.author == self.request.user
 
-        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
-        return redirect('dashboard')
+    def get_success_url_args(self) -> list:
+        return [self.object.exam.pk]
 
-    def get_success_url(self):
-        return reverse('teacher_exam', args=[self.part.exam.pk])
+    def get_success_url_fragment(self) -> str:
+        return f'#part{self.object.pk}'
 
 
 class QuestionDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
@@ -463,24 +464,23 @@ class QuestionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return reverse('teacher_exam', args=[self.part.exam.pk])
 
 
-class QuestionUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class QuestionUpdateView(DefaultUpdateView):
     model = Question
     fields = ['body']
-    success_message = 'سوال با موفقیت تغییر کرد'
+    success_message = 'سوال با موفقیت تغییر کرد'  # message to show after changing the choice
+    error_message = 'بدنه سوال تغییر نکرده است'   # message if the body is not changed
 
-    def get_object(self, queryset=None):
-        return get_object_or_404(Question, pk=self.kwargs['pk'])
+    def get_queryset(self):
+        return Question.objects.select_related('part__exam__author').only('body', 'part__exam__author__id')
 
-    def dispatch(self, request, *args, **kwargs):
-        self.question = self.get_object()
-        if self.question.part.exam.author == request.user:
-            return super().dispatch(request, *args, **kwargs)
+    def is_user_authorized(self):
+        return self.object.part.exam.author == self.request.user
 
-        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
-        return redirect('dashboard')
+    def get_success_url_args(self) -> list:
+        return [self.object.part.exam.pk]
 
-    def get_success_url(self):
-        return reverse('teacher_exam', args=[self.question.part.exam.pk])
+    def get_success_url_fragment(self) -> str:
+        return f'#question{self.object.pk}'
 
 
 class ChoiceDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
@@ -528,58 +528,20 @@ class ChoiceCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return reverse('teacher_exam', args=[self.question.part.exam.pk])
 
 
-class ChoiceUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class ChoiceUpdateView(DefaultUpdateView):
     model = Choice
-    fields = ['body']
     success_message = 'گزینه با موفقیت تغییر کرد'  # message to show after changing the choice
+    error_message = 'بدنه گزینه تغییر نکرده است'   # message if the body is not changed
 
     def get_queryset(self):
-        """
-        Optimize database queries by using select_related and only to fetch necessary fields.
-        """
         return Choice.objects.select_related('question__part__exam__author'
                                              ).only('body','question__part__exam__author__id')
 
-    def get_object(self, queryset=None):
-        """
-        Retrieve the Choice object using an optimized queryset and raising 404 if it does not exist.
-        """
-        queryset = queryset or self.get_queryset()
-        return get_object_or_404(queryset, pk=self.kwargs['pk'])
+    def is_user_authorized(self) -> bool:
+        return self.object.question.part.exam.author == self.request.user
 
-    def dispatch(self, request, *args, **kwargs):
-        """
-        Check if the user has permission to access this page.
-        Store the Choice object in self.choice to avoid redundant calls.
-        """
-        self.choice = self.get_object()
-        if not self.is_user_authorized():
-            messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
-            return redirect('dashboard')
-        return super().dispatch(request, *args, **kwargs)
+    def get_success_url_args(self) -> list:
+        return [self.object.question.part.exam.pk]
 
-    def is_user_authorized(self):
-        """
-        Check if the user is the author of the exam related to this choice.
-        """
-        return self.choice.question.part.exam.author == self.request.user
-
-    def form_valid(self, form):
-        """
-        Check if the new body is the same as the current body.
-        If they are the same, show an error message and do not save the changes.
-        """
-        new_body = form.cleaned_data.get('body')
-        if new_body == self.choice.body:
-            messages.error(self.request, 'متن گزینه تغییری نکرده است')
-            url = self.get_success_url()
-            return redirect(url)
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        """
-        Redirect to the exam page with a fragment pointing to the related question.
-        """
-        url = reverse_lazy('teacher_exam', args=[self.choice.question.part.exam.pk])
-        fragment = self.choice.question.pk
-        return f'{url}#question{fragment}'
+    def get_success_url_fragment(self) -> str:
+        return f'#question{self.object.question.pk}'

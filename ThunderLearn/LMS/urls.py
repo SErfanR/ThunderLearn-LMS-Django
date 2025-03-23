@@ -4,11 +4,14 @@ from . import views
 urlpatterns = [
     # student URLs
     # student dashboard
-    path('/', views.dashboard, name='dashboard'),
+    path('', views.dashboard, name='dashboard'),
 
     # student class-related URLs
     path('class/<int:id>/', views.class_detail, name='class_detail'),
     path('class/<int:id>/join/', views.ClassJoinView.as_view(), name='class_join'),
+
+    # student way-related URLs
+    path('way/<int:id>/', views.way_detail, name='way_detail'),
 
     # student exam-related URLs
     path('exam/<int:id>/', views.exam_view, name='exam_view'),

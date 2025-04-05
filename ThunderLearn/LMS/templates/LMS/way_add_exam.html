@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'teacher-offcanvas.html' %}
+    <div class="card bg-secondary-subtle border border-secondary" id="card_class">
+        <h4> افزودن آزمون به مسیر {{ way.name }} </h4>
+        <hr>
+        <form method="post" target="_self">
+            {% csrf_token %}
+            <select name="exam" class="form-select" id="id_exam" size="10" required>
+                {% for quesryset in exams %}
+                    {% for exam in quesryset %}
+                        <option value="{{ exam.pk }}">{{ exam.title }}</option>
+                    {% endfor %}
+                {% endfor %}
+            </select>
+            <input type="text" class="form-control" name="text" placeholder="عنوان جهت نمایش" required>
+            <input type="submit" value="افزودن" class="btn btn-primary">
+        </form>
+    </div>
+{% endblock %}

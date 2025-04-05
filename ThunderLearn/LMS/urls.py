@@ -47,4 +47,9 @@ urlpatterns = [
     path('teacher/choice/delete/<int:pk>/', views.ChoiceDeleteView.as_view(), name='choice_delete'),
     path('teacher/<int:pk>/choice/create/', views.ChoiceCreateView.as_view(), name='choice_create'),
     path('teacher/choice/<int:pk>/update/', views.ChoiceUpdateView.as_view(), name='choice_update'),
+
+    # way-related URLs
+    path('teacher/class/<int:pk>/ways/', views.ClassWayListView.as_view(), name='class_ways'),
+    path('teacher/way/<int:pk>/', views.WayDetailView.as_view(), name='teacher_way'),
+    path('teacher/way/<int:pk>/add-exam/', views.WayAddExamView.as_view(), name='way_add_exam'),
 ]

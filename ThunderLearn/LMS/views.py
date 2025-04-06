@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.views import View
 from django.views.generic.edit import DeleteView, CreateView
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, TemplateView
 from django.urls import reverse
 import json
 
@@ -536,3 +536,82 @@ class ChoiceUpdateView(DefaultUpdateView):
 
     def get_success_url_fragment(self) -> str:
         return f'#question{self.object.question.pk}'
+
+
+class ClassWayListView(LoginRequiredMixin, TemplateView):
+    template_name = 'LMS/class_ways.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.groups.filter(name="Teacher").exists:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = Classroom.objects.prefetch_related('class_ways')
+        this_classroom = get_object_or_404(queryset, pk=kwargs['pk'])
+        context['classroom'] = this_classroom
+        context['ways'] = this_classroom.class_ways.all()
+        return context
+
+
+class WayDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    pass
+
+
+class WayCreateView(DefaultCreateView):
+    pass
+
+
+class WayDetailView(LoginRequiredMixin, DetailView):
+    model = Way
+    context_object_name = 'way'
+    template_name = 'LMS/teacher_way.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.way = get_object_or_404(Way, pk=kwargs['pk'])
+        classrooms = self.way.classrooms.all()
+        teachers = []
+        for classroom in classrooms:
+            teachers.append(classroom.teacher)
+        if request.user in teachers:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        activities = self.way.activities
+        context['activities'] = json.loads(activities)
+        return context
+
+
+class WayAddExamView(LoginRequiredMixin, View):
+    def setup(self, request, *args, **kwargs):
+        self.way = get_object_or_404(Way, pk=kwargs['pk'])
+        return super().setup(request, *args, **kwargs)
+
+    def get(self, request, pk):
+        classrooms = self.way.classrooms.all()
+        exams = []
+        for classroom in classrooms:
+            exams.append(classroom.class_exams.all())
+        return render(request, 'LMS/way_add_exam.html', context={
+            'way': self.way,
+            'exams': exams,
+        })
+
+    def post(self, request, pk):
+        exam = int(request.POST.get('exam'))
+        text = request.POST.get('text')
+        new = [1, exam, f"{text}"]
+        activities = self.way.activities
+        activities = json.loads(activities)
+        activities.append(new)
+        self.way.activities = json.dumps(activities)
+        self.way.save()
+        return redirect('teacher_way', pk=pk)
+

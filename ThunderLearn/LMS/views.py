@@ -594,6 +594,17 @@ class WayAddExamView(LoginRequiredMixin, View):
         self.way = get_object_or_404(Way, pk=kwargs['pk'])
         return super().setup(request, *args, **kwargs)
 
+    def dispatch(self, request, *args, **kwargs):
+        classrooms = self.way.classrooms.all()
+        teachers = []
+        for classroom in classrooms:
+            teachers.append(classroom.teacher)
+        if request.user in teachers:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
     def get(self, request, pk):
         classrooms = self.way.classrooms.all()
         exams = []
@@ -615,3 +626,96 @@ class WayAddExamView(LoginRequiredMixin, View):
         self.way.save()
         return redirect('teacher_way', pk=pk)
 
+
+class WayMoveActivity(LoginRequiredMixin, View):
+    def setup(self, request, *args, **kwargs):
+        self.way = get_object_or_404(Way, pk=kwargs['pk'])
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        classrooms = self.way.classrooms.all()
+        teachers = []
+        for classroom in classrooms:
+            teachers.append(classroom.teacher)
+        if request.user in teachers:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get(self, request, pk, move):
+        # getting the queries
+        index = int(request.GET.get('index'))
+        index -= 1  # decreasing one from index because it should start from 0 not 1
+        # getting activities list from Way
+        activities = self.way.activities
+        activities = json.loads(activities)
+        # checking if it should move up or down (backward or forward)
+        if move == 'up':
+            # it should go backward
+            try:
+                activities[index], activities[index - 1] = activities[index - 1], activities[index]
+            except:
+                return redirect('teacher_way', pk=pk)
+        elif move == 'down':
+            # it should go forward
+            try:
+                activities[index], activities[index + 1] = activities[index + 1], activities[index]
+            except:
+                return redirect('teacher_way', pk=pk)
+        # saving the changes to Way
+        self.way.activities = json.dumps(activities)
+        self.way.save()
+        # redirecting to Way page
+        return redirect('teacher_way', pk=pk)
+
+
+class WayDeleteActivity(LoginRequiredMixin, View):
+    """View for deleting an activity from a Way"""
+
+    def setup(self, request, *args, **kwargs):
+        """Initialize the Way object and check permissions"""
+        self.way = get_object_or_404(Way, pk=kwargs['pk'])
+        self.classrooms = self.way.classrooms.select_related('teacher').all()
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        """Check if user has permission to delete activities"""
+        permission = any(request.user == classroom.teacher for classroom in self.classrooms)
+        if not permission:
+            messages.error(request, 'شما به این صفحه دسترسی ندارید')
+            return redirect('dashboard')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, pk):
+        """Render confirmation page for activity deletion"""
+        return render(request, 'LMS/way_activity_confirm_delete.html')
+
+    def post(self, request, pk):
+        """Handle activity deletion"""
+        try:
+            # getting the queries
+            index = int(request.GET.get('index')) - 1  # decreasing one from index because it should start from 0 not 1
+
+            # getting activities list from Way
+            activities = self.way.activities
+            activities = json.loads(activities)
+
+            if not 0 <= index < len(activities):
+                messages.error(request, 'فعالیت پیدا نشد')
+                return redirect('teacher_way', pk=pk)
+
+            # deleting the activity
+            del activities[index]
+
+            # saving the changes to Way
+            self.way.activities = json.dumps(activities)
+            self.way.save()
+
+            messages.success(request, 'فعالیت با موفقیت حذف شد')
+
+        except:  # if there is any errors
+            messages.error(request, 'حذف فعالیت با خطا مواجه شد')
+
+        # redirecting to Way page
+        return redirect('teacher_way', pk=pk)

@@ -52,4 +52,6 @@ urlpatterns = [
     path('teacher/class/<int:pk>/ways/', views.ClassWayListView.as_view(), name='class_ways'),
     path('teacher/way/<int:pk>/', views.WayDetailView.as_view(), name='teacher_way'),
     path('teacher/way/<int:pk>/add-exam/', views.WayAddExamView.as_view(), name='way_add_exam'),
+    path('teacher/way/<int:pk>/move/<str:move>/', views.WayMoveActivity.as_view(), name='way_move_up'),
+    path('teacher/way/<int:pk>/delete/', views.WayDeleteActivity.as_view(), name='way_delete'),
 ]

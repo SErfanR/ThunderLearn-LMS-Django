@@ -309,6 +309,13 @@ class TeacherExamDetailView(LoginRequiredMixin, DetailView):
         messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
         return redirect('dashboard')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        answers = get_object_or_404(ExamAnswer, exam=self.object).answers
+        answers = json.loads(answers)
+        context['answers'] = answers
+        return context
+
     model = Exam
     context_object_name = 'exam'
     template_name = 'LMS/teacher_exam.html'
@@ -536,6 +543,41 @@ class ChoiceUpdateView(DefaultUpdateView):
 
     def get_success_url_fragment(self) -> str:
         return f'#question{self.object.question.pk}'
+
+
+class QuestionAnswerChange(LoginRequiredMixin, View):
+    def setup(self, request, *args, **kwargs):
+        self.this_exam = get_object_or_404(Exam, pk=kwargs['pk'])
+        self.this_answers = get_object_or_404(ExamAnswer, exam=self.this_exam)
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        for c in self.this_exam.classrooms.all():
+            if request.user == c.teacher:
+                return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get_index(self, p, q):
+        count = 0
+        loop = 0
+        for part in self.this_exam.parts.all():
+            loop += 1
+            if loop < p:
+                count += part.questions.count()
+        count += q
+        return count
+
+    def post(self, request, pk, p, q):
+        new_answer = int(request.POST.get('answer'))
+        answers = self.this_answers.answers
+        answers = json.loads(answers)
+        answers[self.get_index(p, q)-1] = new_answer
+        self.this_answers.answers = json.dumps(answers)
+        self.this_answers.save()
+        # TODO: fragment
+        return redirect('teacher_exam', pk=pk)
 
 
 class ClassWayListView(LoginRequiredMixin, TemplateView):

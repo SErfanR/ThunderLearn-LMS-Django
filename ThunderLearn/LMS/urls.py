@@ -42,6 +42,7 @@ urlpatterns = [
     path('teacher/question/delete/<int:pk>/', views.QuestionDeleteView.as_view(), name='question_delete'),
     path('teacher/<int:pk>/question/create/', views.QuestionCreateView.as_view(), name='question_create'),
     path('teacher/question/<int:pk>/update/', views.QuestionUpdateView.as_view(), name='question_update'),
+    path('teacher/exam/<int:pk>/change_answer/<int:p>/<int:q>/', views.QuestionAnswerChange.as_view(), name='question_answer_change'),
 
     # choice-related URLs
     path('teacher/choice/delete/<int:pk>/', views.ChoiceDeleteView.as_view(), name='choice_delete'),

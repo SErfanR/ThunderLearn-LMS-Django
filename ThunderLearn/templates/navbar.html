@@ -20,7 +20,7 @@
                            data-bs-toggle="dropdown" aria-expanded="false">
                             {{ user }}
                             {% if user.avatar.exists %}
-                                <img src="{{ user.avatar.last.avatar }}" alt="" width="32" height="32" class="rounded-circle me-2">
+                                <img src="/{{ user.avatar.last.avatar }}" alt="" width="32" height="32" class="rounded-circle me-2">
                             {% else %}
                                 <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" alt="" width="32" height="32" class="rounded-circle me-2">
                             {% endif %}

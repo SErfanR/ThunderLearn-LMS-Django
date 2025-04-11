@@ -72,6 +72,10 @@
             </table>
         </div>
     </div>
+    <script>
+        let qNum = 0;
+        let answers = {{ answers }};
+    </script>
     {% for part in exam.parts.all %}
         {% with number=forloop.counter %}
             <div class="card bg-secondary-subtle border border-secondary text-center" id="card_classes">
@@ -100,8 +104,8 @@
                         <tbody>
                         {% for question in part.questions.all %}
                             <tr id="question{{ question.pk }}">
-                                <th scope="row">
-                                    {{ forloop.counter }}
+                                <th scope="row" id="q_num_{{ number }}_{{ forloop.counter }}">
+
                                 </th>
                                 <th class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
                                       <div class="accordion" id="accordionExample" dir="ltr">
@@ -123,6 +127,28 @@
                                               <div id="collapse_{{ number }}_{{ forloop.counter }}"
                                                  class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                                                   <div class="accordion-body text-end">
+                                                      <div class="dropdown text-start">
+                                                          <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                              پاسخ صحیح
+                                                              (<span id="answer_{{ number }}_{{ forloop.counter }}"></span>)
+                                                          </a>
+                                                          {% with m=forloop.counter %}
+                                                          <ul class="dropdown-menu">
+                                                              {% for choice in question.choices.all %}
+                                                                  <li>
+                                                                      <form method="post" action="{% url 'question_answer_change' pk=exam.pk p=number q=m %}">
+                                                                          {% csrf_token %}
+                                                                          <input type="hidden" value="{{ forloop.counter }}" name="answer">
+                                                                          <button type="submit" class="dropdown-item">
+                                                                              {{ forloop.counter }}
+                                                                          </button>
+                                                                      </form>
+                                                                  </li>
+                                                              {% endfor %}
+                                                          </ul>
+                                                          {% endwith %}
+                                                      </div>
+                                                      <br>
                                                       <form method="post" action="{% url 'question_update' question.pk %}" class="d-flex">
                                                           {% csrf_token %}
                                                           <textarea class="form-control" style="height: 20px;" name="body">{{ question.body }}</textarea>
@@ -164,6 +190,11 @@
                                     </a>
                                 </td>
                             </tr>
+                            <script>
+                                qNum++;
+                                document.getElementById("q_num_{{ number }}_{{ forloop.counter }}").innerHTML = qNum;
+                                document.getElementById("answer_{{ number }}_{{ forloop.counter }}").innerHTML = answers[qNum-1];
+                            </script>
                         {% endfor %}
                         <tr>
                             <td colspan="5" class="text-center">

@@ -30,6 +30,11 @@ class Classroom(models.Model):
             pass  # TODO: return and except statement
 
 
+class ClassroomJoinRequest(models.Model):
+    student = models.ForeignKey(User, related_name='student_class_joining_requests', on_delete=models.CASCADE)
+    classroom = models.ForeignKey(Classroom, related_name='class_joining_requests', on_delete=models.CASCADE)
+
+
 class Way(models.Model):
     title = models.CharField(max_length=250)
     classrooms = models.ManyToManyField(Classroom, related_name='class_ways')
@@ -83,6 +88,7 @@ class UserScore(models.Model):
     score = models.IntegerField()
 
 
+# TODO: Presentations models
 # TODO: Lessons models
 # TODO: Homeworks models
 # TODO: Questionnaire models

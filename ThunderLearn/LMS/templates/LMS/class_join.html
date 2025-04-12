@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+{% load index %}
+
+    <div class="card bg-danger-subtle text-center" id="card001">
+        <div class="card-body bg-secondary-subtle" id="card003">
+            <form method="post">
+                {% csrf_token %}
+                <h2 class="text-secondary"> درخواست برای عضویت در کلاس "{{ class.name }}" </h2>
+                <br>
+                <h5 class="text-danger"> آیا می خواهید درخواست عضویت را ثبت کنید؟ </h5>
+                <br>
+                <input type="submit" class="btn btn-danger" value="ثبت درخواست">
+            </form>
+        </div>
+    </div>
+    <style>
+        #card001 {
+            padding-top: 20vh;
+            padding-bottom: 20vh;
+            margin-top: 10vh;
+            margin-bottom: 10vh;
+            margin-left: 5vw;
+            margin-right: 5vw;
+            height: 75vh;
+            background-image: linear-gradient(90deg, yellow, orange);
+            box-shadow:  8px 8px 16px #111111,
+            0px 0px 0px #ffffff;
+        }
+        #card002 {
+            margin-bottom: 10vh;
+            margin-left: 5vw;
+            margin-right: 5vw;
+        }
+        #card003 {
+            width: 50vw;
+            margin-left: 20vw;
+            margin-right: 20vw;
+            border-radius: 10px;
+            box-shadow:  8px 8px 16px #111111,
+            0px 0px 0px #ffffff;
+        }
+    </style>
+
+{% endblock %}

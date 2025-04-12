@@ -4,7 +4,12 @@
     <div class="card" id="card003">
 
         <div class="card-body">
-            <h3 class="card-title text-center" id="title001">{{ class.name }}</h3>
+            <h3 class="card-title text-center" id="title001">
+                {{ class.name }}
+                {% if request.user not in class.students.all %}
+                <a href="{% url 'class_join' class.id %}" class="btn btn-primary"> عضویت در کلاس </a>
+                {% endif %}
+            </h3>
             <a href="{#{% url profile class.teacher.profile %}#}">
                 <span class="badge text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-pill">
                     {% if class.teacher.first_name != '' and class.teacher.last_name != '' %}

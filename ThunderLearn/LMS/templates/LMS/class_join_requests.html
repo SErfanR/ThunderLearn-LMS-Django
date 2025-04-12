@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+{% include 'teacher-offcanvas.html' %}
+<div class="card bg-secondary-subtle border border-secondary text-center" id="card_classes">
+        <div class="card-body">
+            <h4 class="text-dark lalezar" id="title">درخواست های عضویت کلاس "{{ classroom.name }}"</h4>
+
+            <table class="table table-hover rounded" dir="ltr" id="table">
+
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">نام کاربری</th>
+                        <th scope="col">نام و نام خانوادگی</th>
+                        <th scope="col">تایید یا رد درخواست</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for request in requests %}
+                    <tr>
+                        <th scope="row">
+                            {{ forloop.counter }}
+                        </th>
+                        <th class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                            {{ request.student.username }}
+                        </th>
+                        <th class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                            {{ request.student.first_name }} {{ request.student.last_name }}
+                        </th>
+                        <td class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                            <form method="post" action="{% url 'class_request_accept' classroom.pk request.pk %}" class="btn btn-sm btn-h">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-h" style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill-add" viewBox="0 0 16 16">
+                                        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                                        <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
+                                    </svg>
+                                </button>
+                            </form>
+                            <a href="" class="btn btn-sm btn-h" style="background: linear-gradient(135deg, #ff416c, #ff4b2b); color: white;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill-x" viewBox="0 0 16 16">
+                                    <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-9 8c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
+                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m-.646-4.854.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 0 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 .708-.708"/>
+                                </svg>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    <style>
+        #card_classes {
+            margin-top: 10vh;
+            margin-bottom: 10vh;
+            margin-right: 70px;
+            margin-left: 5vw;
+            padding-top: 1vh;
+        }
+        #title {
+            background: -webkit-linear-gradient(45deg, #09009f, #00ff95 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: xx-large;
+            padding-bottom: 5px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: 0.4s ease-out;
+        }
+        #table{
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .btn-h{
+            border: none;
+            transition: 0.4s ease-out;
+        }
+        .btn-h:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+{% endblock %}

@@ -2,7 +2,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Classroom, Way, Exam, UserAnswer, UserScore, ExamAnswer, Part, Question, Choice
+from .models import (Classroom, Way, Exam, UserAnswer, UserScore, ExamAnswer,
+                     Part, Question, Choice, ClassroomJoinRequest)
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.http import HttpResponse
@@ -263,21 +264,87 @@ class ClassCreateView(CreateView):
         return super(ClassCreateView, self).form_valid(form)
 
 
-class ClassJoinView(LoginRequiredMixin, View):
+class ClassJoinView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = ClassroomJoinRequest
+    template_name = 'LMS/class_join.html'
+    fields = []
+    success_url = reverse_lazy('dashboard')
+    success_message = 'درخواست شما برای عضویت در این کلاس، ثبت شد، منتظر نتیجه باشید.'
+
     def setup(self, request, *args, **kwargs):
         self.this_class = Classroom.objects.get(id=kwargs['id'])
         return super().setup(request, *args, **kwargs)
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.groups.filter(name="Students").exists():
-            if not self.this_class.students.filter(id=request.user.id).exists():
+
+            if self.this_class.students.filter(id=request.user.id).exists():
+                messages.error(self.request, 'شما در این کلاس عضو هستید! نیازی به درخواست نیست.')
+                return redirect('class_detail', id=kwargs['id'])
+
+            elif ClassroomJoinRequest.objects.filter(student=request.user).exists():
+                messages.error(self.request, 'شما قبلا برای عضویت در این کلاس درخواست ثبت کرده اید.')
+                return redirect('class_detail', id=kwargs['id'])
+
+            else:
                 return super().dispatch(request, *args, **kwargs)
 
         messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
         return redirect('dashboard')
 
-    def get(self, request, id):
-        return HttpResponse(f'join class {id}')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['class'] = self.this_class
+        return context
+
+    def form_valid(self, form):
+        form.instance.student = self.request.user
+        form.instance.classroom = self.this_class
+        return super().form_valid(form)
+
+
+class ClassJoinListView(LoginRequiredMixin, SuccessMessageMixin, ListView):
+    model = ClassroomJoinRequest
+    template_name = 'LMS/class_join_requests.html'
+
+    def setup(self, request, *args, **kwargs):
+        self.classroom = get_object_or_404(Classroom, pk=kwargs['pk'])
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.classroom.teacher == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['requests'] = ClassroomJoinRequest.objects.filter(classroom=self.classroom)
+        context['classroom'] = self.classroom
+        return context
+
+
+class ClassJoinAcceptView(LoginRequiredMixin, SuccessMessageMixin, View):
+    success_message = 'دانش آموز، عضو شد.'
+
+    def setup(self, request, *args, **kwargs):
+        self.join_request = get_object_or_404(ClassroomJoinRequest, pk=kwargs['r_pk'])
+        self.classroom = self.join_request.classroom
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.classroom.teacher == request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def post(self, request, pk, r_pk):
+        self.classroom.students.add(self.join_request.student)
+        self.classroom.save()
+        self.join_request.delete()
+        return redirect('class_requests_list', pk=pk)
 
 
 class TeacherExamListView(LoginRequiredMixin, ListView):

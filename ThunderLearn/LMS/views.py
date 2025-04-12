@@ -311,8 +311,14 @@ class TeacherExamDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        answers = get_object_or_404(ExamAnswer, exam=self.object).answers
-        answers = json.loads(answers)
+        try:
+            answers = ExamAnswer.objects.get(exam=self.object).answers
+            answers = json.loads(answers)
+        except:
+            answers = ExamAnswer.objects.create(exam=self.object)
+            answers.answers = json.dumps([])
+            answers.save()
+            answers = []
         context['answers'] = answers
         return context
 
@@ -455,8 +461,26 @@ class QuestionCreateView(DefaultCreateView):
     def is_user_authorized(self) -> bool:
         return self.obj.exam.author == self.request.user
 
+    def get_index(self):
+        count = 0
+        p = self.obj
+        for part in self.obj.exam.parts.all():
+            if part != p:
+                count += part.questions.count()
+            else:
+                break
+        count += p.questions.count()
+        return count
+
     def form_valid(self, form):
         form.instance.part = self.obj
+        i = self.get_index()
+        answer = ExamAnswer.objects.get(exam=self.obj.exam)
+        a = answer.answers
+        a = json.loads(a)
+        a.insert(i, 0)
+        answer.answers = json.dumps(a)
+        answer.save()
         return super().form_valid(form)
 
     def get_success_url_args(self) -> list:
@@ -600,11 +624,52 @@ class ClassWayListView(LoginRequiredMixin, TemplateView):
 
 
 class WayDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
-    pass
+    model = Way
+    context_object_name = 'way'
+    template_name = 'LMS/way_confirm_delete.html'
+    success_message = 'مسیر با موفقیت حذف شد'
+
+    def setup(self, request, *args, **kwargs):
+        """Initialize the Way object and check permissions"""
+        self.way = get_object_or_404(Way, pk=kwargs['pk'])
+        self.classrooms = self.way.classrooms.select_related('teacher').all()
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        """Check if user has permission to delete activities"""
+        permission = any(request.user == classroom.teacher for classroom in self.classrooms)
+        if not permission:
+            messages.error(request, 'شما به این صفحه دسترسی ندارید')
+            return redirect('dashboard')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('dashboard')  # TODO: reversing to Teacher_Ways
 
 
 class WayCreateView(DefaultCreateView):
-    pass
+    # TODO: costume View
+    model = Way
+    success_message = 'مسیر با موفقیت ایجاد شد'  # message to show after creating the way
+    success_redirect_url = 'teacher_way'
+    template_name = 'LMS/way_create.html'
+    fields = ['title', 'classrooms']
+
+    def get_queryset(self):
+        return Classroom.objects.all()
+
+    def is_user_authorized(self) -> bool:
+        return self.request.user.groups.filter(name="Teachers").exists()
+
+    def form_valid(self, form):
+        form.instance.activities = json.dumps([])
+        return super().form_valid(form)
+
+    def get_success_url_args(self) -> list:
+        return [self.object.pk]
+
+    def get_success_url_fragment(self) -> str:
+        return ''
 
 
 class WayDetailView(LoginRequiredMixin, DetailView):

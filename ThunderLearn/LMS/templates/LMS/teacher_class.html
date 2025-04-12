@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 {% include 'teacher-offcanvas.html' %}
+    <a href="{% url 'class_ways' class.pk %}" class="btn btn-primary"> مسیر های یادگیری کلاس {{ class.name }} </a>
     <div class="card bg-secondary-subtle border border-secondary text-center" id="card_students">
         <div class="card-body">
 

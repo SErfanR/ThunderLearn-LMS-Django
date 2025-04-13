@@ -35,6 +35,9 @@ urlpatterns = [
     path('teacher/exam/create/', views.ExamCreateView.as_view(), name='exam_create'),
     path('teacher/exam/<int:pk>/', views.TeacherExamDetailView.as_view(), name='teacher_exam'),
 
+    # teacher exam-score-related URLs
+    path('teacher/exam/<int:pk>/scores/', views.ExamScoresListView.as_view(), name='exam_scores'),
+
     # part-related URLs
     path('teacher/part/delete/<int:pk>/', views.PartDeleteView.as_view(), name='part_delete'),
     path('teacher/<int:pk>/part/create/', views.PartCreateView.as_view(), name='part_create'),

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'teacher-offcanvas.html' %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+<div class="card bg-secondary-subtle border border-secondary text-center" id="card_classes">
+    <div class="card-body">
+        <h4 class="text-dark lalezar" id="title">رتبه های برتر آزمون "{{ exam.title }}"</h4>
+
+        <table class="table table-hover rounded" dir="ltr" id="table">
+
+            <thead>
+                <tr>
+                    <th scope="col">رتبه</th>
+                    <th scope="col">نام کاربری</th>
+                    <th scope="col">نام</th>
+                    <th scope="col">نام خانوادگی</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for top in top10 %}
+                <tr>
+                    <th scope="row">
+                        {{ forloop.counter }}
+                    </th>
+                    <th class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                        {{ top.user.username }}
+                    </th>
+                    <th class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                        {{ top.user.first_name }}
+                    </th>
+                    <th class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
+                        {{ top.user.last_name }}
+                    </th>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+<div class="card bg-secondary-subtle border border-secondary text-center" id="card_classes">
+    <div class="card-body">
+        <h4 class="text-dark lalezar" id="title">امتیازات کسب شده دانش آموزان در آزمون "{{ exam.title }}" </h4>
+        <center>
+            <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+        </center>
+    </div>
+</div>
+
+
+{{ names }}
+{{ scores }}
+
+<script>
+const xValues = [];
+{% for name in names %}
+xValues.push("{{ name }}")
+{% endfor %}
+
+const yValues = {{ scores }};
+
+const barColors = [];
+{% for color in colors %}
+barColors.push("{{ color }}")
+{% endfor %}
+
+new Chart("myChart", {
+  type: "bar",
+  data: {
+    labels: xValues,
+    datasets: [{
+      backgroundColor: barColors,
+      data: yValues
+    }]
+  },
+  options: {
+    legend: {display: false},
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        }
+      }]
+    },
+
+    title: {
+      display: false,
+    }
+  }
+});
+</script>
+<style>
+        #card_classes {
+            margin-top: 10vh;
+            margin-bottom: 10vh;
+            margin-right: 70px;
+            margin-left: 5vw;
+            padding-top: 1vh;
+        }
+        #title {
+            background: -webkit-linear-gradient(45deg, #09009f, #00ff95 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: xx-large;
+            padding-bottom: 5px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: 0.4s ease-out;
+        }
+        #table{
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .btn-h{
+            border: none;
+            transition: 0.4s ease-out;
+        }
+        .btn-h:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+{% endblock %}

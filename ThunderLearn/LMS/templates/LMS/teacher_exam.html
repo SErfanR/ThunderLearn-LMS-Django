@@ -134,6 +134,15 @@
                                                           </a>
                                                           {% with m=forloop.counter %}
                                                           <ul class="dropdown-menu">
+                                                               <li>
+                                                                  <form method="post" action="{% url 'question_answer_change' pk=exam.pk p=number q=m %}">
+                                                                      {% csrf_token %}
+                                                                      <input type="hidden" value="0" name="answer">
+                                                                      <button type="submit" class="dropdown-item">
+                                                                          بدون پاسخ صحیح
+                                                                      </button>
+                                                                  </form>
+                                                              </li>
                                                               {% for choice in question.choices.all %}
                                                                   <li>
                                                                       <form method="post" action="{% url 'question_answer_change' pk=exam.pk p=number q=m %}">

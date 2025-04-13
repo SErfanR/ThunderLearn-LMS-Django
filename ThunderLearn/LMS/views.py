@@ -172,7 +172,7 @@ class UserScoreView(View):
             else:
                 pass
 
-        score_p = score_int / (3 * questions_number) * 100
+        score_p = round(score_int / (3 * questions_number) * 100, 2)
 
         if UserScore.objects.filter(exam=self.this_exam, user=request.user).exists():
             user_score = UserScore.objects.filter(exam=self.this_exam, user=request.user).last()
@@ -433,6 +433,42 @@ class ExamCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         messages.success(self.request, 'آزمون با موفقیت ایجاد شد')
         return super(ExamCreateView, self).form_valid(form)
+
+
+class ExamScoresListView(LoginRequiredMixin, View):
+    template_name = 'LMS/teacher_exam_scores.html'
+
+    def setup(self, request, *args, **kwargs):
+        self.exam = get_object_or_404(Exam, pk=kwargs['pk'])
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user == self.exam.author:
+            messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+            return redirect('dashboard')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_color(self, score):
+        if score >= 80:
+            return "green"
+        elif score >= 60:
+            return "yellow"
+        elif score >= 40:
+            return "orange"
+        else:
+            return "red"
+
+    def get(self, requset, pk):
+        user_scores = UserScore.objects.filter(exam=self.exam)
+        context = {
+            'names': [score.user.username for score in user_scores],
+            'pks': [score.user.pk for score in user_scores],
+            'scores': [score.score for score in user_scores],
+            'colors': [self.get_color(score.score) for score in user_scores],
+            'exam': self.exam,
+            'top10': user_scores.order_by('-score')[:10],
+        }
+        return render(requset, self.template_name, context)
 
 
 class PartDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):

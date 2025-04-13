@@ -3,9 +3,15 @@
 {% include 'teacher-offcanvas.html' %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 
+<div class="card text-center" id="card_classes"  style="background-color: #353839;">
+    <div class="card-body">
+        <h4 class="text-dark lalezar" id="title">نتایج آزمون "{{ exam.title }}"</h4>
+    </div>
+</div>
+
 <div class="card bg-secondary-subtle border border-secondary text-center" id="card_classes">
     <div class="card-body">
-        <h4 class="text-dark lalezar" id="title">رتبه های برتر آزمون "{{ exam.title }}"</h4>
+        <h4 class="text-dark lalezar" id="">رتبه های برتر آزمون "{{ exam.title }}"</h4>
 
         <table class="table table-hover rounded" dir="ltr" id="table">
 
@@ -21,9 +27,23 @@
             <tbody>
             {% for top in top10 %}
                 <tr>
-                    <th scope="row">
-                        {{ forloop.counter }}
-                    </th>
+                    {% if forloop.counter == 1 %}
+                        <th scope="row" style="background-color: #EFBF04;">
+                            {{ forloop.counter }}
+                        </th>
+                    {% elif forloop.counter == 2 %}
+                        <th scope="row" style="background-color: #C4C4C4;">
+                            {{ forloop.counter }}
+                        </th>
+                    {% elif forloop.counter == 3 %}
+                        <th scope="row" style="background-color: #CE8946;">
+                            {{ forloop.counter }}
+                        </th>
+                    {% else %}
+                        <th scope="row">
+                            {{ forloop.counter }}
+                        </th>
+                    {% endif %}
                     <th class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
                         {{ top.user.username }}
                     </th>
@@ -33,7 +53,7 @@
                     <th class="bg-{% if forloop.counter|divisibleby:2 %}dark-subtle{% else %}secondary-subtle{% endif %}">
                         {{ top.user.last_name }}
                     </th>
-                    <th class="bg-{% if forloop.counter|divisibleby:2 %}info{% else %}info-subtle{% endif %}">
+                    <th style="background-color: #007BA7; color: #ffffff;">
                         {{ top.score }}
                     </th>
                 </tr>
@@ -46,7 +66,7 @@
 
 <div class="card bg-secondary-subtle border border-secondary text-center" id="card_classes">
     <div class="card-body">
-        <h4 class="text-dark lalezar" id="title">وضعیت نمرات در آزمون "{{ exam.title }}" </h4>
+        <h4 class="text-dark lalezar" id="">وضعیت نمرات در آزمون "{{ exam.title }}" </h4>
         <center>
             <canvas id="myDoughnut" style="width:100%;max-width:600px"></canvas>
             <hr>
@@ -57,16 +77,12 @@
 
 <div class="card bg-secondary-subtle border border-secondary text-center" id="card_classes">
     <div class="card-body">
-        <h4 class="text-dark lalezar" id="title">امتیازات کسب شده دانش آموزان در آزمون "{{ exam.title }}" </h4>
+        <h4 class="text-dark lalezar" id="">نمرات دانش آموزان در آزمون "{{ exam.title }}" </h4>
         <center>
             <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
         </center>
     </div>
 </div>
-
-
-{{ names }}
-{{ scores }}
 
 <script>
 const xValues = [];
@@ -196,7 +212,7 @@ new Chart("avrBar", {
         padding-top: 1vh;
     }
     #title {
-        background: -webkit-linear-gradient(45deg, #09009f, #00ff95 80%);
+        background: -webkit-linear-gradient(45deg, #ffc067, #ffc067 80%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: xx-large;

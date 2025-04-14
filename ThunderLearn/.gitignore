@@ -1,5 +1,6 @@
 db.sqlite3
 LMS/migrations/
 accounts/migrations/
+home/migrations/
 .vs/
 .idea/

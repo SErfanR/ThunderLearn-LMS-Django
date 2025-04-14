@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'LMS.apps.LmsConfig',  # added our lms app by its config
     'accounts.apps.AccountsConfig',  # like top
+    'home.apps.HomeConfig',  # like top
 ]
 
 MIDDLEWARE = [
@@ -68,8 +69,6 @@ TEMPLATES = [
         },
     },
 ]
-
-STATIC_URL = "static/"
 
 LOGIN_URL = 'login'
 
@@ -122,6 +121,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = f'{BASE_DIR}/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

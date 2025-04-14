@@ -7,15 +7,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
-<body dir="rtl" class="bg-dark" data-bs-theme="light">
+<body dir="rtl" data-bs-theme="light">
     {% load static %}
     {% include "navbar.html" %}
     {% include "messages.html" %}
     {% block content %}
     {% endblock %}
+    {% include "footer.html" %}
 <style>
     * {
         transition: 0.5s ease-in-out;
+    }
+    body{
+        background-color:#262626 ;
     }
     .lalezar {
         font-family: "Lalezar", serif;

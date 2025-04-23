@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="card bg-secondary-subtle border border-secondary" id="card_class">
-        <h4> افزودن آزمون </h4>
+        <h4> افزودن مسیر یادگیری </h4>
         <hr>
         <form method="post" class="needs-validation" novalidate>
             {% csrf_token %}
@@ -34,7 +34,7 @@
             </div>
             <br>
             <br>
-            <button class="btn btn-primary" type="submit">افزودن آزمون</button>
+            <button class="btn btn-primary" type="submit">افزودن مسیر</button>
             <a href="{% url 'teacher_exams' %}" class="btn btn-outline-primary">لغو</a>
         </form>
     </div>

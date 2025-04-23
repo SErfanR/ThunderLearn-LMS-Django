@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+{% include 'teacher-offcanvas.html' %}
+{% load static %}
+<script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+
+<div class="card bg-secondary-subtle border border-secondary" id="card_class">
+    <h4> افزودن ارائه </h4>
+    <hr>
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+            {% if forloop.counter == 1 %}
+                <label for="id_title" class="form-label">نام ارائه</label>
+                <input type="text" name="title" maxlength="250" class="form-control" required id="id_title">
+            {% elif forloop.counter == 2 %}
+                <label for="id_classroom">
+                    کلاس ها
+                    (<small> ctrl را نگه دارید و انتخاب کنید </small>)
+                </label>
+                <select name="classroom" class="form-select" required id="id_classroom" multiple
+                    aria-label="size 3 multiple select">
+                    {% for classroom in request.user.teacher_class.all %}
+                        <option value="{{ classroom.pk }}">{{ classroom.name }}</option>
+                    {% endfor %}
+                </select>
+            {% elif forloop.counter == 3 %}
+                <label for="id_des">توضیحات</label>
+                <div class="django-ckeditor-widget form-control" data-field-id="id_des" style="display: inline-block;">
+                <textarea class="form-control" name="des" cols="40" rows="10" required id="id_des" data-processed="0" data-config="{&quot;skin&quot;: &quot;moono-lisa&quot;, &quot;toolbar_Basic&quot;: [[&quot;Source&quot;, &quot;-&quot;, &quot;Bold&quot;, &quot;Italic&quot;]], &quot;toolbar_Full&quot;: [[&quot;Styles&quot;, &quot;Format&quot;, &quot;Bold&quot;, &quot;Italic&quot;, &quot;Underline&quot;, &quot;Strike&quot;, &quot;SpellChecker&quot;, &quot;Undo&quot;, &quot;Redo&quot;], [&quot;Link&quot;, &quot;Unlink&quot;, &quot;Anchor&quot;], [&quot;Image&quot;, &quot;Flash&quot;, &quot;Table&quot;, &quot;HorizontalRule&quot;], [&quot;TextColor&quot;, &quot;BGColor&quot;], [&quot;Smiley&quot;, &quot;SpecialChar&quot;], [&quot;Source&quot;]], &quot;toolbar&quot;: &quot;Full&quot;, &quot;height&quot;: 291, &quot;width&quot;: &quot;100%&quot;, &quot;filebrowserWindowWidth&quot;: 940, &quot;filebrowserWindowHeight&quot;: 725, &quot;language&quot;: &quot;en-us&quot;, &quot;versionCheck&quot;: false}" data-external-plugin-resources="[]" data-id="id_des" data-type="ckeditortype"></textarea>
+            {% endif %}
+        {% endfor %}
+    </div>
+        <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+        <label class="form-check-label" for="invalidCheck">
+            قوانین سایت را قبول می کنم
+        </label>
+        <div class="invalid-feedback">
+            برای ایجاد ارائه باید قوانین را قبول کنید
+        </div>
+        <br>
+        <br>
+        <button class="btn btn-primary" type="submit">افزودن ارائه</button>
+        <a href="{% url 'teacher_presents' %}" class="btn btn-outline-primary">لغو</a>
+    </form>
+</div>
+<style>
+    #card_class {
+        margin-top: 10vh;
+        margin-bottom: 10vh;
+        margin-left: 5vw;
+        margin-right: 5vw;
+        padding: 3vh;
+    }
+</style>
+<script>
+    (() => {
+'use strict'
+
+// Fetch all the forms we want to apply custom Bootstrap validation styles to
+const forms = document.querySelectorAll('.needs-validation')
+
+// Loop over them and prevent submission
+Array.from(forms).forEach(form => {
+form.addEventListener('submit', event => {
+  if (!form.checkValidity()) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  form.classList.add('was-validated')
+}, false)
+})
+})()
+</script>
+{% endblock %}

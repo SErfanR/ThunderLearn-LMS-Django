@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import json
+from ckeditor.fields import RichTextField
 
 
 class Classroom(models.Model):
@@ -88,7 +89,19 @@ class UserScore(models.Model):
     score = models.IntegerField()
 
 
-# TODO: Presentations models
+# Presentations models
+class Presentation(models.Model):
+    title = models.CharField(max_length=250)
+    author = models.ForeignKey(User, related_name='presentations', on_delete=models.CASCADE)
+    classroom = models.ManyToManyField(Classroom, related_name='class_presents')
+    des = RichTextField(blank=True)
+
+
+class Slide(models.Model):
+    presentation = models.ForeignKey(Presentation, related_name='slides', on_delete=models.CASCADE)
+    body = RichTextField(blank=True)
+
+
 # TODO: Lessons models
 # TODO: Homeworks models
 # TODO: Questionnaire models

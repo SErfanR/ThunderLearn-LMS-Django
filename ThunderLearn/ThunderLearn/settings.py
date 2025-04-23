@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'ckeditor',
     'LMS.apps.LmsConfig',  # added our lms app by its config
     'accounts.apps.AccountsConfig',  # like top
     'home.apps.HomeConfig',  # like top

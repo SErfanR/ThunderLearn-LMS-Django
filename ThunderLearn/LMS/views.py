@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import (Classroom, Way, Exam, UserAnswer, UserScore, ExamAnswer,
-                     Part, Question, Choice, ClassroomJoinRequest)
+                     Part, Question, Choice, ClassroomJoinRequest, Presentation)
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.http import HttpResponse
@@ -12,8 +12,8 @@ from django.views.generic.edit import DeleteView, CreateView
 from django.views.generic import ListView, DetailView, TemplateView
 from django.urls import reverse
 import json
-
 from .default_views import DefaultUpdateView, DefaultCreateView
+from .forms import PresentationForm
 
 @login_required
 def dashboard(request):
@@ -172,7 +172,10 @@ class UserScoreView(View):
             else:
                 pass
 
-        score_p = round(score_int / (3 * questions_number) * 100, 2)
+        try:
+            score_p = round(score_int / (3 * questions_number) * 100, 2)
+        except ZeroDivisionError:
+            score_p = 100
 
         if UserScore.objects.filter(exam=self.this_exam, user=request.user).exists():
             user_score = UserScore.objects.filter(exam=self.this_exam, user=request.user).last()
@@ -929,3 +932,50 @@ class WayDeleteActivity(LoginRequiredMixin, View):
 
         # redirecting to Way page
         return redirect('teacher_way', pk=pk)
+
+
+class TeacherPresentationsListView(TemplateView):
+    template_name = 'LMS/teacher-presentations/presents_list.html'
+
+
+class PresentationCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Presentation
+    success_message = 'ارائه با موفقیت ایجاد شد'  # message to show after creating the presentation
+    success_redirect_url = 'teacher_presents'
+    template_name = 'LMS/teacher-presentations/present_create.html'
+    form_class = PresentationForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.groups.filter(name="Teacher").exists:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+
+class PresentationDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = Presentation
+    context_object_name = 'presentation'
+    template_name = 'LMS/teacher-presentations/present_confirm_delete.html'
+    success_message = 'ارائه با موفقیت حذف شد'
+
+    def setup(self, request, *args, **kwargs):
+        """Initialize the Way object and check permissions"""
+        self.presentation = get_object_or_404(Presentation, pk=kwargs['pk'])
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        """Check if user has permission to delete activities"""
+        permission = request.user == self.presentation.author
+        if not permission:
+            messages.error(request, 'شما به این صفحه دسترسی ندارید')
+            return redirect('dashboard')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('teacher_presents')
+

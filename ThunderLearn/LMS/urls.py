@@ -62,4 +62,9 @@ urlpatterns = [
     path('teacher/way/<int:pk>/delete/', views.WayDeleteActivity.as_view(), name='way_delete'),
     path('teacher/class/<int:pk>/way/create/', views.WayCreateView.as_view(), name='way_create'),
     path('teacher/way/delete/<int:pk>/', views.WayDeleteView.as_view(), name='way_delete_way'),
+
+    # presentation-related URLs
+    path('teacher/presentation/', views.TeacherPresentationsListView.as_view(), name='teacher_presents'),
+    path('teacher/presentation/create/', views.PresentationCreateView.as_view(), name='present_create'),
+    path('teacher/presentation/<int:pk>/delete/', views.PresentationDeleteView.as_view(), name='present_delete'),
 ]

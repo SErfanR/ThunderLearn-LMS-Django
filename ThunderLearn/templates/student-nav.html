@@ -1,0 +1,207 @@
+<!-- navbar.html -->
+<nav class="navbar">
+    <a href="/" class="navbar-brand">
+        <i class="fas fa-bolt"></i>
+        صاعقه
+    </a>
+
+    <div class="nav-links">
+        <a href="/" class="nav-link">صفحه اصلی</a>
+        <a href="{% url 'about_us' %}" class="nav-link">درباره ما</a>
+        <a href="{% url 'contact_us' %}" class="nav-link">تماس با ما</a>
+        <a href="{% url 'dashboard' %}" class="nav-link">داشبورد</a>
+    </div>
+
+    <div class="nav-actions">
+        <a href="{% url 'change_theme' %}" class="nav-link">
+            تغییر حالت
+            {% if not request.user.settings.last.theme %}
+                <i class="fas fa-sun me-2"></i>
+            {% else %}
+                <i class="fas fa-moon me-2"></i>
+            {% endif %}
+        </a>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit">خروج</button> &nbsp;
+        </form>
+    </div>
+</nav>
+
+<style>
+    /* استایل‌های Navbar */
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .navbar-brand {
+        display: flex;
+        align-items: center;
+        font-weight: 900;
+        font-size: 1.5rem;
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    .navbar-brand i {
+        margin-left: 0.5rem;
+        color: var(--accent);
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .nav-link {
+        color: var(--dark);
+        text-decoration: none;
+        font-weight: 500;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+        color: var(--primary);
+    }
+
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        right: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--primary);
+        transition: width 0.3s ease;
+    }
+
+    .nav-link:hover::after {
+        width: 100%;
+        left: 0;
+    }
+
+    .nav-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .btn {
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: white;
+        border: 2px solid var(--primary);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-outline {
+        background-color: transparent;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+    }
+
+    .btn-outline:hover {
+        background-color: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* منوی همبرگر برای نمایش موبایل */
+    .navbar-toggler {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--primary);
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    /* استایل‌های واکنشگرا */
+    @media (max-width: 992px) {
+        .nav-links {
+            position: fixed;
+            top: 70px;
+            right: -100%;
+            width: 80%;
+            height: calc(100vh - 70px);
+            background: white;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 0;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+        }
+
+        .nav-links.active {
+            right: 0;
+        }
+
+        .nav-link {
+            padding: 1rem 0;
+            font-size: 1.1rem;
+        }
+
+        .navbar-toggler {
+            display: block;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .navbar {
+            padding: 1rem;
+        }
+
+        .nav-actions {
+            display: none;
+        }
+    }
+</style>
+
+<script>
+    // اسکریپت برای منوی همبرگر در حالت موبایل
+    document.addEventListener('DOMContentLoaded', function() {
+        const navbarToggler = document.querySelector('.navbar-toggler');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (navbarToggler && navLinks) {
+            navbarToggler.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+            });
+
+            // بستن منو هنگام کلیک روی لینک‌ها
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                });
+            });
+        }
+    });
+</script>

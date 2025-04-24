@@ -3,7 +3,9 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import FormView
 from .forms import RegisterForm
+from .models import Settings
 from django.contrib.auth import login
+from django.shortcuts import redirect
 
 
 class UserLoginView(LoginView):
@@ -29,3 +31,19 @@ class RegisterView(FormView):
             login(self.request, user)
 
         return super(RegisterView, self).form_valid(form)
+
+
+def change_theme(request):
+    if request.user.settings.exists():  # Fixed typo from 'exsits' to 'exists'
+        settings = request.user.settings.first()  # Need to get the first object
+        if settings.theme:
+            settings.theme = False
+        else:
+            settings.theme = True
+        settings.save()
+    else:
+        settings = Settings.objects.create(user=request.user, theme=True)  # Fixed 'object' to 'objects'
+
+    # Redirect to the previous page
+    return redirect(request.META.get('HTTP_REFERER', '/'))  # Fallback to home if no referer
+

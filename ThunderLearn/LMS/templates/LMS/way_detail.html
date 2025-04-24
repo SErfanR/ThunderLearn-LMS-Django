@@ -1,20 +1,288 @@
-{% extends "base.html" %}
-{% block content %}
+{% include 'student-nav.html' %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد - صاعقه | سیستم مدیریت یادگیری</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --success: #1cc88a;
+            --info: #36b9cc;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
+        }
 
-    <div class="card" id="card002">
-        <ul class="list-group list-group-flush">
-            {% for activity in activities %}
-                {% if activity.0 == 1 %}
-                    <li class="list-group-item">
-                        <p><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16">
-                            <path d="M5.933.87a2.89 2.89 0 0 1 4.134 0l.622.638.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01zM7.002 11a1 1 0 1 0 2 0 1 1 0 0 0-2 0m1.602-2.027c.04-.534.198-.815.846-1.26.674-.475 1.05-1.09 1.05-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745.336 0 .504-.24.554-.627"/>
-                        </svg>
-                            {{ activity.2 }}</p>
-                        <a class="btn btn-danger" href="{% url 'exam_view' activity.1 %}">شروع آزمون</a>
-                    </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+         body {
+        {% if request.user.settings.last.theme %}
+            background-color: #1a1a2e;
+        {% else %}
+            background-color: #f8f9fe;
+        {% endif %}
+            color: var(--dark);
+            min-height: 100vh;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .stat-card .card-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stat-card .card-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        /* Classes Section */
+        .classes-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .section-title h3 {
+            font-size: 1.8rem;
+            font-weight: 900;
+
+            {% if request.user.settings.last.theme %}
+            color: var(--primary);
+            {% else %}
+            color: var(--primary-dark);
+            {% endif %}
+
+            display: inline-block;
+            padding: 0 2rem;
+
+            {% if request.user.settings.last.theme %}
+            background-color: #1a1a2e;
+            {% else %}
+            background-color: #f8f9fe;
+            {% endif %}
+
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--primary), transparent);
+            z-index: 0;
+        }
+
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .class-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .class-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .class-card-exam {
+            background: linear-gradient(135deg, var(--primary), var(--info));
+        }
+
+        .class-card-present {
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+        }
+
+        .class-card .card-header {
+            padding: 1.2rem;
+            color: white;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .class-card .card-body {
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .class-card .card-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .class-card .btn-view {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .class-card .btn-view:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title h3 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .classes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Up Section -->
+    <div class="stats-container">
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="card-title">مسیر یادگیری</div>
+                <div class="card-value">
+                    {{ way.title }}
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="card-value">
+                    <h1 style="font-size: 10vh;"><i class="fas fa-route me-2"></i></h1>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="card-value">
+                    {{ activities|length }}
+                </div>
+                <div class="card-title">فعالیت</div>
+            </div>
+        </div>
     </div>
 
-{% endblock %}
+    <!-- Activities Section -->
+    <div class="classes-container">
+        <div class="section-title">
+            <h3>فعالیت ها</h3>
+        </div>
+
+        <div class="classes-grid">
+            {% for activity in activities %}
+                {% if activity.0 == 1 %}
+                    <div class="class-card class-card-exam">
+                        <div class="card-header">
+                            <i class="fas fa-clock me-2"></i>
+                            آزمون
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ activity.2 }}</h5>
+                            <a href="{% url 'exam_view' activity.1 %}" class="btn-view">
+                                <i class="fas fa-clock me-2"></i>
+                                شروع آزمون
+                            </a>
+                        </div>
+                    </div>
+            {% elif activity.0 == 2 %}
+                <div class="class-card class-card-present">
+                    <div class="card-header">
+                        <i class="fas fa-chalkboard me-2"></i>
+                        ارائه
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ activity.2 }}</h5>
+                        <a href="{% url 'student_present_detail' activity.1 %}" class="btn-view">
+                            <i class="fas fa-eye me-2"></i>
+                            مشاهده ارائه
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // اسکریپت‌های مورد نیاز می‌توانند اینجا اضافه شوند
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('داشبورد دانش آموزی بارگذاری شد');
+        });
+    </script>
+</body>
+</html>

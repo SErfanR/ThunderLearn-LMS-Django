@@ -1,3 +1,4 @@
+{% include 'student-nav.html' %}
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -30,7 +31,11 @@
         }
 
         body {
+        {% if request.user.settings.last.theme %}
+            background-color: #1a1a2e;
+        {% else %}
             background-color: #f8f9fe;
+        {% endif %}
             color: var(--dark);
             min-height: 100vh;
         }
@@ -93,10 +98,22 @@
         .section-title h3 {
             font-size: 1.8rem;
             font-weight: 900;
+
+            {% if request.user.settings.last.theme %}
+            color: var(--primary);
+            {% else %}
             color: var(--primary-dark);
+            {% endif %}
+
             display: inline-block;
             padding: 0 2rem;
+
+            {% if request.user.settings.last.theme %}
+            background-color: #1a1a2e;
+            {% else %}
             background-color: #f8f9fe;
+            {% endif %}
+
             position: relative;
             z-index: 1;
         }
@@ -206,14 +223,14 @@
             
             <div class="stat-card">
                 <div class="card-value">
-                    {{ user.user_answer.count|default:"0" }}
+                    {{ user.user_answers.count|default:"0" }}
                 </div>
                 <div class="card-title">آزمون‌های پاسخ داده شده</div>
             </div>
             
             <div class="stat-card">
                 <div class="card-value">
-                    {{ user.user_score.count|default:"0" }}
+                    {{ user.user_scores.count|default:"0" }}
                 </div>
                 <div class="card-title">آزمون‌های تصحیح شده</div>
             </div>

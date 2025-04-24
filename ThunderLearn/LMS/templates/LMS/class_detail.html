@@ -1,113 +1,371 @@
-{% extends "base.html" %}
-{% block content %}
 {% load static %}
-    <div class="card" id="card003">
-
-        <div class="card-body">
-            <h3 class="card-title text-center" id="title001">
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد - صاعقه | سیستم مدیریت یادگیری</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<div class="class-detail-container">
+    <!-- Header Section -->
+    <div class="class-header">
+        <div class="class-title-container">
+            <h1 class="class-title">
+                <i class="fas fa-chalkboard me-2"></i>
                 {{ class.name }}
-                {% if request.user not in class.students.all %}
-                <a href="{% url 'class_join' class.id %}" class="btn btn-primary"> عضویت در کلاس </a>
-                {% endif %}
-            </h3>
-            <a href="{#{% url profile class.teacher.profile %}#}">
-                <span class="badge text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-pill">
-                    {% if class.teacher.first_name != '' and class.teacher.last_name != '' %}
-                            <font size="3">{{ class.teacher.first_name }}&nbsp{{ class.teacher.last_name }}</font>
-                         {% else %}
-                            <font size="2">{{ class.teacher }}</font>
-                         {% endif %}
-                    {% if class.teacher.avatar.exists %}
-                        <img src="{% static class.teacher.avatar.last.avatar %}" class="rounded-circle" width="40" height="40">
-                    {% else %}
-                        <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" class="rounded-circle" width="40" height="40">
-                    {% endif %}
-                </span>
-            </a>
+            </h1>
 
-            {% if class.assistants.count != 0 %}
-                <br>
-                <br>
-                {% for assistant in class.assistants.all %}
-                     <span class="badge text-secondary-emphasis bg-secondary-subtle border border-secondary-subtle rounded-pill">
-                         {% if assistant.first_name != '' and assistant.last_name != '' %}
-                             <font size="2">{{ assistant.first_name }}&nbsp{{ assistant.last_name }}</font>
-                         {% else %}
-                            <font size="2">{{ assistant }}</font>
-                         {% endif %}
-                         {% if assistant.avatar.avatar.exists %}
-                             <img src="{% static assistant.avatar.avatar %}" class="rounded-circle" width="25" height="25">
-                         {% else %}
-                             <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" class="rounded-circle" width="25" height="25">
-                         {% endif %}
-                    </span>
-                {% endfor %}
+            {% if request.user not in class.students.all %}
+            <a href="{% url 'class_join' class.id %}" class="btn btn-join">
+                <i class="fas fa-user-plus me-2"></i>
+                عضویت در کلاس
+            </a>
             {% endif %}
         </div>
 
-    </div>
+        <!-- Teacher Info -->
+        <div class="teacher-info">
+            <div class="teacher-avatar">
+                {% if class.teacher.avatar.exists %}
+                <img src="{% static class.teacher.avatar.last.avatar %}" alt="{{ class.teacher.get_full_name }}">
+                {% else %}
+                <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" alt="تصویر پیش‌فرض">
+                {% endif %}
+            </div>
+            <div class="teacher-details">
+                <h3 class="teacher-role">استاد کلاس</h3>
+                <h2 class="teacher-name">
+                    {% if class.teacher.first_name or class.teacher.last_name %}
+                        {{ class.teacher.first_name }} {{ class.teacher.last_name }}
+                    {% else %}
+                        {{ class.teacher.username }}
+                    {% endif %}
+                </h2>
+            </div>
+        </div>
 
-    {% if class.class_ways.count != 0 %}
-        <div class="card" id="card002">
-
-            <h3 class="card-title text-center" id="title002">مسیر های این کلاس</h3>
-
-            {% for way in class.class_ways.all %}
-                <div class="card" id="card001">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ way.title}}</h5>
-                        <a href="{% url 'way_detail' way.id %}" class="btn btn-primary">مشاهده</a>
+        <!-- Assistants Section -->
+        {% if class.assistants.count != 0 %}
+        <div class="assistants-section">
+            <h3 class="section-subtitle">دستیاران آموزشی</h3>
+            <div class="assistants-list">
+                {% for assistant in class.assistants.all %}
+                <div class="assistant-card">
+                    <div class="assistant-avatar">
+                        {% if assistant.avatar.exists %}
+                        <img src="{% static assistant.avatar.last.avatar %}" alt="{{ assistant.get_full_name }}">
+                        {% else %}
+                        <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" alt="تصویر پیش‌فرض">
+                        {% endif %}
+                    </div>
+                    <div class="assistant-name">
+                        {% if assistant.first_name or assistant.last_name %}
+                            {{ assistant.first_name }} {{ assistant.last_name }}
+                        {% else %}
+                            {{ assistant.username }}
+                        {% endif %}
                     </div>
                 </div>
-            {% endfor %}
-
+                {% endfor %}
+            </div>
         </div>
+        {% endif %}
+    </div>
+
+    <!-- Learning Paths Section -->
+    {% if class.class_ways.count != 0 %}
+    <div class="learning-paths-section">
+        <h2 class="section-title">
+            <i class="fas fa-road me-2"></i>
+            مسیرهای یادگیری این کلاس
+        </h2>
+
+        <div class="paths-grid">
+            {% for way in class.class_ways.all %}
+            <div class="path-card">
+                <div class="path-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3 class="path-title">{{ way.title }}</h3>
+                <p class="path-description">{{ way.description|truncatechars:100 }}</p>
+                <a href="{% url 'way_detail' way.id %}" class="btn btn-view-path">
+                    <i class="fas fa-eye me-2"></i>
+                    مشاهده مسیر
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
     {% endif %}
-    <style>
-        ul {
-            padding: 0;
+</div>
+
+<style>
+    :root {
+        --primary: #4361ee;
+        --primary-dark: #3a0ca3;
+        --secondary: #7209b7;
+        --accent: #f72585;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --gray: #6c757d;
+    }
+
+    .class-detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .class-header {
+        background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+        border-radius: 16px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .class-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+        z-index: 0;
+    }
+
+    .class-title-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .class-title {
+        font-size: 2rem;
+        font-weight: 900;
+        margin: 0;
+    }
+
+    .btn-join {
+        background-color: white;
+        color: var(--primary);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-join:hover {
+        background-color: var(--accent);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .teacher-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .teacher-avatar img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .teacher-details {
+        line-height: 1.4;
+    }
+
+    .teacher-role {
+        font-size: 1rem;
+        font-weight: 500;
+        opacity: 0.9;
+        margin-bottom: 0.5rem;
+    }
+
+    .teacher-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .assistants-section {
+        position: relative;
+        z-index: 1;
+    }
+
+    .section-subtitle {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .assistants-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .assistant-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .assistant-card:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-3px);
+    }
+
+    .assistant-avatar img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .assistant-name {
+        font-weight: 500;
+    }
+
+    /* Learning Paths Section */
+    .learning-paths-section {
+        margin-top: 3rem;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--primary-dark);
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .paths-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .path-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .path-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .path-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .path-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: var(--dark);
+    }
+
+    .path-description {
+        color: var(--gray);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .btn-view-path {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1.5rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-view-path:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        color: white;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .class-title-container {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
         }
-        #listItem001 {
-            border-radius: 0 0 10px 10px;
+
+        .teacher-info {
+            flex-direction: column;
+            align-items: flex-start;
         }
-        #card001, #card002, #card003 {
-            margin: 1vw;
+
+        .section-title {
+            font-size: 1.5rem;
         }
-        #card001 {
-            {#background-image: url({% static "LMS/001.jpg" %});#}
-            background-size: cover;
-            background-position: center;
-            box-shadow:  8px 8px 16px #666666,
-            0px 0px 0px #ffffff;
-            border: 0;
+    }
+
+    @media (max-width: 576px) {
+        .class-header {
+            padding: 1.5rem;
         }
-        #card002 {
-            border-radius: 20px;
-            background: #e0e0e0;
-            border: 0;
+
+        .class-title {
+            font-size: 1.5rem;
         }
-        #card002 {
-            box-shadow: inset 9px 9px 18px #5a5a5a,
-            inset -9px -9px 18px #ffffff;
+
+        .paths-grid {
+            grid-template-columns: 1fr;
         }
-        #card003 {
-            min-width: 100vw;
-            margin: 0;
-            box-shadow:  14px 14px 28px #3f3f3f,
-             0px 0px 0px #ffffff;
-            border: none;
-            border-radius: 0 0 10px 10px;
-        }
-        #card003 {
-            background-image: linear-gradient(-90deg, darkslategray, darkseagreen);
-        }
-        #title001 {
-            margin-top: 1vh;
-        }
-        #title002 {
-            margin-top: 20px;
-            margin-left: 20px;
-            margin-right: 20px;
-        }
-    </style>
-{% endblock %}
+    }
+</style>
+</html>

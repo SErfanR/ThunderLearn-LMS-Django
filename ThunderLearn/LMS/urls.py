@@ -72,4 +72,9 @@ urlpatterns = [
     path('teacher/presentation/create/', views.PresentationCreateView.as_view(), name='present_create'),
     path('teacher/presentation/<int:pk>/delete/', views.PresentationDeleteView.as_view(), name='present_delete'),
     path('teacher/presentation/<int:pk>/', views.PresentationDetailView.as_view(), name='present_detail'),
+
+    # slide-related URLs
+    path('teacher/slide/<int:pk>/delete/', views.SlideDeleteView.as_view(), name='slide_delete'),
+    path('teacher/presentation/<int:pk>/slide/create/', views.SlideCreateView.as_view(), name='slide_create'),
+    path('teacher/slide/<int:pk>/update/', views.SlideUpdateView.as_view(), name='slide_update'),
 ]

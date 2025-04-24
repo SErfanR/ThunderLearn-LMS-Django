@@ -1,75 +1,396 @@
-{% extends "base.html" %}
-{% block content %}
 {% load index %}
-
-    <div class="card bg-success-subtle text-center" id="card001">
-        <div class="card-body bg-secondary-subtle" id="card003">
-            <h5 class="text-secondary"> {{ score.exam.title }} </h5>
-            <br>
-            <h2 class="text-success"> {{ score.score }}% </h2>
-            <br>
-            <a href="#card002" class="btn btn-danger"> مشاهده جواب ها </a>
-        </div>
-    </div>
-    <div class="card bg-success-subtle border border-success text-center" id="card002">
-        <div class="card-body" dir="ltr">
-            <h5 class="text-dark">پاسخ ها</h5>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">پاسخ شما</th>
-                        <th scope="col">پاسخ صحیح</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for ea in exam_answers %}
-                        <tr>
-                        {% with i=forloop.counter|add:"-1" %}
-                            <th scope="row">{{ i|add:"1" }}</th>
-                            {% if exam_answers|index:i == 0 %}
-                                <td class="bg-secondary-subtle text-secondary">{{ user_answers|index:i }}</td>
-                                <td class="bg-secondary-subtle text-secondary">حذف</td>
-                            {% elif user_answers|index:i == exam_answers|index:i %}
-                                <td class="bg-success text-light">{{ user_answers|index:i }}</td>
-                                <td>{{ user_answers|index:i }}</td>
-                            {% else %}
-                                <td class="bg-danger text-light">{{ user_answers|index:i }}</td>
-                                <td class="bg-primary text-light">{{ exam_answers|index:i }}</td>
-                            {% endif %}
-                        {% endwith %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نتایج آزمون - صاعقه | سیستم مدیریت یادگیری</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
     <style>
-        #card001 {
-            padding-top: 20vh;
-            padding-bottom: 20vh;
-            margin-top: 10vh;
-            margin-bottom: 10vh;
-            margin-left: 5vw;
-            margin-right: 5vw;
-            height: 75vh;
-            background-image: linear-gradient(90deg, rgba(45, 105, 30), rgba(40, 150, 40));
-            box-shadow:  8px 8px 16px #111111,
-            0px 0px 0px #ffffff;
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --success: #4bb543;
+            --success-light: #e6f7e5;
+            --success-dark: #3a9a33;
+            --danger: #ff4444;
+            --danger-light: #ffebee;
+            --warning: #ffcc00;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #f1f3f5;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
-        #card002 {
-            margin-bottom: 10vh;
-            margin-left: 5vw;
-            margin-right: 5vw;
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            {% if request.user.settings.last.theme %}
+            background-color: #1a1a2e;
+            {% else %}
+            background-color: #f8f9fe;
+            {% endif %}
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
         }
-        #card003 {
-            width: 50vw;
-            margin-left: 20vw;
-            margin-right: 20vw;
-            border-radius: 10px;
-            box-shadow:  8px 8px 16px #111111,
-            0px 0px 0px #ffffff;
+
+        .results-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Score Card */
+        .score-card {
+            background: linear-gradient(135deg, var(--success-dark), var(--success));
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            margin: 2rem auto;
+            box-shadow: var(--shadow-lg);
+            color: var(--white);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: var(--transition);
+        }
+
+        .score-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+            z-index: -1;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .exam-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .score-value {
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin: 1rem 0;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            position: relative;
+            display: inline-block;
+        }
+
+        .score-value::after {
+            content: '%';
+            font-size: 2rem;
+            position: absolute;
+            top: 0.5rem;
+            right: -1.5rem;
+        }
+
+        .btn-view-answers {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 2rem;
+            background-color: var(--white);
+            color: var(--success-dark);
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            margin-top: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-view-answers:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background-color: var(--accent);
+            color: var(--white);
+        }
+
+        /* Answers Table */
+        .answers-card {
+        {% if request.user.settings.last.theme %}
+            background-color: var(--dark);
+        {% else %}
+            background-color: var(--white);
+        {% endif %}
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem auto;
+            box-shadow: var(--shadow-md);
+        }
+
+        .answers-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        {% if request.user.settings.last.theme %}
+            color: white;
+        {% else %}
+            color: black;
+        {% endif %}
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: var(--primary);
+            color: var(--white);
+            font-weight: 600;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .table tbody tr {
+            transition: var(--transition);
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .table td, .table th {
+            padding: 1rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* Answer Status Styles */
+        .answer-correct {
+            background-color: var(--success-light);
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .answer-wrong {
+            background-color: var(--danger-light);
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .answer-skipped {
+            background-color: var(--light-gray);
+            color: var(--gray);
+        }
+
+        .correct-answer {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 2rem auto;
+            max-width: 600px;
+        }
+
+        .progress-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+            background-color: var(--light-gray);
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--success), var(--success-dark));
+            transition: width 1s ease-in-out;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .score-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .exam-title {
+                font-size: 1.3rem;
+            }
+            
+            .score-value {
+                font-size: 3.5rem;
+            }
+            
+            .answers-card {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .results-container {
+                padding: 1rem;
+            }
+            
+            .score-card {
+                padding: 1.5rem 1rem;
+                margin: 1rem auto;
+            }
+            
+            .score-value {
+                font-size: 3rem;
+            }
+            
+            .answers-card {
+                padding: 1rem;
+            }
+            
+            .table td, .table th {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
         }
     </style>
+</head>
+<body>
+{% include 'student-nav.html' %}
+<br>
+<br>
+<br>
+    <div class="results-container">
+        <!-- Score Section -->
+        <div class="score-card animate__animated animate__fadeIn">
+            <div class="exam-title">
+                <i class="fas fa-clipboard-check me-2"></i>
+                {{ score.exam.title }}
+            </div>
+            
+            <div class="score-value animate__animated animate__pulse animate__infinite">
+                {{ score.score }}
+            </div>
+            
+            <div class="progress-container animate__animated animate__fadeInUp">
+                <div class="progress-title">
+                    <span>میزان موفقیت شما</span>
+                    <span>{{ score.score }}%</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: {{ score.score }}%" 
+                         aria-valuenow="{{ score.score }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            
+            <a href="#answers-section" class="btn-view-answers animate__animated animate__fadeInUp">
+                <i class="fas fa-list-check me-2"></i>
+                مشاهده جزییات پاسخ‌ها
+            </a>
+        </div>
 
-{% endblock %}
+        <!-- Answers Section -->
+        <div id="answers-section" class="answers-card animate__animated animate__fadeIn">
+            <h2 class="answers-title">
+                <i class="fas fa-circle-question me-2"></i>
+                جزییات پاسخ‌های شما
+            </h2>
+            
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">پاسخ شما</th>
+                            <th scope="col">پاسخ صحیح</th>
+                            <th scope="col">وضعیت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ea in exam_answers %}
+                            <tr class="animate__animated animate__fadeInUp" style="animation-delay: {{ forloop.counter0 }}s">
+                            {% with i=forloop.counter0 %}
+                                <th scope="row">{{ i|add:1 }}</th>
+                                
+                                {% if exam_answers|index:i == 0 %}
+                                    <!-- Skipped Question -->
+                                    <td class="answer-skipped">پاسخی ثبت نشد</td>
+                                    <td class="answer-skipped">حذف شده</td>
+                                    <td>
+                                        <span class="badge bg-secondary rounded-pill">
+                                            <i class="fas fa-minus-circle me-1"></i>
+                                            حذف شده
+                                        </span>
+                                    </td>
+                                {% elif user_answers|index:i == exam_answers|index:i %}
+                                    <!-- Correct Answer -->
+                                    <td class="answer-correct">{{ user_answers|index:i }}</td>
+                                    <td>{{ user_answers|index:i }}</td>
+                                    <td>
+                                        <span class="badge bg-success rounded-pill">
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            صحیح
+                                        </span>
+                                    </td>
+                                {% else %}
+                                    <!-- Wrong Answer -->
+                                    <td class="answer-wrong">{{ user_answers|index:i }}</td>
+                                    <td class="correct-answer">{{ exam_answers|index:i }}</td>
+                                    <td>
+                                        <span class="badge bg-danger rounded-pill">
+                                            <i class="fas fa-times-circle me-1"></i>
+                                            نادرست
+                                        </span>
+                                    </td>
+                                {% endif %}
+                            {% endwith %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animate progress bar on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBar = document.querySelector('.progress-bar');
+            progressBar.style.width = '0';
+            setTimeout(() => {
+                progressBar.style.width = progressBar.getAttribute('aria-valuenow') + '%';
+            }, 300);
+        });
+    </script>
+</body>
+</html>

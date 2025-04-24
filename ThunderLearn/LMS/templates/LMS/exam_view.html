@@ -1,36 +1,307 @@
-{% extends "base.html" %}
-{% block content %}
-    <div class="card" id="card003">
-
-        <div class="card-body">
-            <h3 class="card-title text-center" id="title001">{{ exam.title }}</h3>
-        </div>
-
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                <h5> {{ exam.des }} </h5>
-            </li>
-            <li class="list-group-item">
-                <a class="btn btn-danger" href="{% url 'question_view' id=exam.id q=1 %}"> شروع آزمون </a>
-            </li>
-        </ul>
-
-    </div>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ exam.title }} - صاعقه | سیستم مدیریت یادگیری</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
     <style>
-        ul {
-            padding: 0;
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #f1f3f5;
+            --white: #ffffff;
+            --success: #4bb543;
+            --warning: #ffcc00;
+            --danger: #ff4444;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
-        #card003 {
-            margin: 0;
-            min-width: 100vw;
-            box-shadow:  14px 14px 28px #3f3f3f,
-             0px 0px 0px #ffffff;
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            {% if request.user.settings.last.theme %}
+            background-color: #1a1a2e;
+            {% else %}
+            background-color: #f8f9fe;
+            {% endif %}
+        }
+
+        .exam-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .exam-card {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            color: var(--white);
+            transition: var(--transition);
+            position: relative;
+            z-index: 1;
+        }
+
+        .exam-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            z-index: -1;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .exam-header {
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .exam-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .exam-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .exam-description {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+
+        .exam-meta {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            border-radius: 50px;
+            padding: 0.5rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .btn-start-exam {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            background-color: var(--white);
+            color: var(--primary);
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: var(--transition);
             border: none;
-            border-radius: 0 0 10px 10px;
-            background-image: linear-gradient(-90deg, darkslategray, darkseagreen);
+            margin: 0 auto 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
-        #title001 {
-            margin-top: 1vh;
+
+        .btn-start-exam:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            color: var(--white);
+            background-color: var(--accent);
+        }
+
+        .btn-start-exam::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent), var(--danger));
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .btn-start-exam:hover::before {
+            width: 100%;
+            right: auto;
+            left: 0;
+        }
+
+        .exam-instructions {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 0 2rem 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .instructions-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .instructions-list {
+            list-style-type: none;
+            padding-right: 0;
+        }
+
+        .instructions-list li {
+            margin-bottom: 0.75rem;
+            position: relative;
+            padding-right: 1.75rem;
+            line-height: 1.7;
+        }
+
+        .instructions-list li::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 0;
+            top: 0;
+            color: var(--success);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .exam-title {
+                font-size: 1.8rem;
+            }
+            
+            .exam-description {
+                font-size: 1.1rem;
+            }
+            
+            .exam-meta {
+                gap: 1rem;
+            }
+            
+            .btn-start-exam {
+                padding: 0.75rem 2rem;
+                font-size: 1.1rem;
+            }
+            
+            .exam-instructions {
+                margin: 0 1rem 2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .exam-container {
+                padding: 0 0.75rem;
+            }
+            
+            .exam-title {
+                font-size: 1.6rem;
+            }
+            
+            .exam-icon {
+                font-size: 2.5rem;
+            }
+            
+            .exam-meta {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.75rem;
+            }
+            
+            .meta-item {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
-{% endblock %}
+</head>
+<body>
+    <div class="exam-container animate__animated animate__fadeIn">
+        <div class="exam-card">
+            <div class="exam-header">
+                <div class="exam-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <h1 class="exam-title">{{ exam.title }}</h1>
+                
+                <div class="exam-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>{{ exam.parts.count }} بخش:</span>
+                        {% for part in exam.parts.all %}
+                        <span>{{ part.questions.count }} سوال</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="exam-description text-center">
+                {{ exam.des }}
+            </div>
+            
+            <div class="exam-instructions animate__animated animate__fadeInUp">
+                <h3 class="instructions-title">
+                    <i class="fas fa-info-circle"></i>
+                    راهنمای آزمون
+                </h3>
+                <ul class="instructions-list">
+                    <li>پس از اتمام زمان، دیگر امکان تغییر وجود ندارد</li>
+                    <li>امکان بازگشت به سوالات قبلی وجود دارد</li>
+                </ul>
+            </div>
+            
+            <div class="text-center">
+                <a href="{% url 'question_view' id=exam.id q=1 %}" class="btn btn-start-exam animate__animated animate__pulse animate__infinite">
+                    <i class="fas fa-play me-2"></i>&nbsp;
+                    شروع آزمون
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

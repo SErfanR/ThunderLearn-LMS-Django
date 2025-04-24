@@ -8,18 +8,32 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
 </head>
+<body>
+{% include 'student-nav.html' %}
+<br>
+<br>
+<br>
 <div class="class-detail-container">
     <!-- Header Section -->
-    <div class="class-header">
+    <div class="class-header animate__animated animate__fadeIn">
         <div class="class-title-container">
-            <h1 class="class-title">
-                <i class="fas fa-chalkboard me-2"></i>
-                {{ class.name }}
-            </h1>
+            <div class="class-title-wrapper">
+                <h1 class="class-title">
+                    <i class="fas fa-chalkboard me-2"></i>
+                    {{ class.name }}
+                </h1>
+                <div class="class-meta">
+                    <span class="badge bg-light text-dark">
+                        <i class="fas fa-users me-1"></i>
+                        {{ class.students.count }} دانشجو
+                    </span>
+                </div>
+            </div>
 
             {% if request.user not in class.students.all %}
-            <a href="{% url 'class_join' class.id %}" class="btn btn-join">
+            <a href="{% url 'class_join' class.id %}" class="btn btn-join animate__animated animate__pulse animate__infinite">
                 <i class="fas fa-user-plus me-2"></i>
                 عضویت در کلاس
             </a>
@@ -30,9 +44,9 @@
         <div class="teacher-info">
             <div class="teacher-avatar">
                 {% if class.teacher.avatar.exists %}
-                <img src="{% static class.teacher.avatar.last.avatar %}" alt="{{ class.teacher.get_full_name }}">
+                <img src="{% static class.teacher.avatar.last.avatar %}" alt="{{ class.teacher.get_full_name }}" class="animate__animated animate__zoomIn">
                 {% else %}
-                <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" alt="تصویر پیش‌فرض">
+                <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" alt="تصویر پیش‌فرض" class="animate__animated animate__zoomIn">
                 {% endif %}
             </div>
             <div class="teacher-details">
@@ -44,53 +58,88 @@
                         {{ class.teacher.username }}
                     {% endif %}
                 </h2>
+                <div class="teacher-contact">
+                    <a href="mailto:{{ class.teacher.email }}" class="contact-link">
+                        <i class="fas fa-envelope me-1"></i>&nbsp;
+                        {{ class.teacher.email }}
+                    </a>
+                </div>
             </div>
         </div>
 
-        <!-- Assistants Section -->
-        {% if class.assistants.count != 0 %}
-        <div class="assistants-section">
-            <h3 class="section-subtitle">دستیاران آموزشی</h3>
-            <div class="assistants-list">
-                {% for assistant in class.assistants.all %}
-                <div class="assistant-card">
-                    <div class="assistant-avatar">
-                        {% if assistant.avatar.exists %}
-                        <img src="{% static assistant.avatar.last.avatar %}" alt="{{ assistant.get_full_name }}">
-                        {% else %}
-                        <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" alt="تصویر پیش‌فرض">
-                        {% endif %}
-                    </div>
-                    <div class="assistant-name">
-                        {% if assistant.first_name or assistant.last_name %}
-                            {{ assistant.first_name }} {{ assistant.last_name }}
-                        {% else %}
-                            {{ assistant.username }}
-                        {% endif %}
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+        <!-- Class Description -->
+        {% if class.description %}
+        <div class="class-description animate__animated animate__fadeInUp">
+            <h3 class="section-subtitle">
+                <i class="fas fa-info-circle me-2"></i>
+                درباره این کلاس
+            </h3>
+            <p>{{ class.description }}</p>
         </div>
         {% endif %}
-    </div>
+
+<!--        &lt;!&ndash; Assistants Section &ndash;&gt;-->
+<!--        {% if class.assistants.count != 0 %}-->
+<!--        <div class="assistants-section animate__animated animate__fadeInUp">-->
+<!--            <h3 class="section-subtitle">-->
+<!--                <i class="fas fa-user-graduate me-2"></i>-->
+<!--                دستیاران آموزشی-->
+<!--            </h3>-->
+<!--            <div class="assistants-list">-->
+<!--                {% for assistant in class.assistants.all %}-->
+<!--                <div class="assistant-card animate__animated animate__fadeInRight" style="animation-delay: {{ forloop.counter0|add:1 }}s">-->
+<!--                    <div class="assistant-avatar">-->
+<!--                        {% if assistant.avatar.exists %}-->
+<!--                        <img src="{% static assistant.avatar.last.avatar %}" alt="{{ assistant.get_full_name }}">-->
+<!--                        {% else %}-->
+<!--                        <img src="https://www.clipartmax.com/png/small/319-3191274_male-avatar-admin-profile.png" alt="تصویر پیش‌فرض">-->
+<!--                        {% endif %}-->
+<!--                    </div>-->
+<!--                    <div class="assistant-details">-->
+<!--                        <div class="assistant-name">-->
+<!--                            {% if assistant.first_name or assistant.last_name %}-->
+<!--                                {{ assistant.first_name }} {{ assistant.last_name }}-->
+<!--                            {% else %}-->
+<!--                                {{ assistant.username }}-->
+<!--                            {% endif %}-->
+<!--                        </div>-->
+<!--                        <a href="mailto:{{ assistant.email }}" class="assistant-email">-->
+<!--                            <i class="fas fa-envelope me-1"></i>-->
+<!--                            {{ assistant.email }}-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                {% endfor %}-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        {% endif %}-->
+<!--    </div>-->
 
     <!-- Learning Paths Section -->
     {% if class.class_ways.count != 0 %}
-    <div class="learning-paths-section">
-        <h2 class="section-title">
-            <i class="fas fa-road me-2"></i>
-            مسیرهای یادگیری این کلاس
-        </h2>
+    <div class="learning-paths-section animate__animated animate__fadeIn">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-route me-2"></i>&nbsp;
+                مسیرهای یادگیری این کلاس
+            </h2>
+            <p class="section-description">با دنبال کردن این مسیرها می‌توانید به صورت گام به گام مطالب را یاد بگیرید</p>
+        </div>
 
         <div class="paths-grid">
             {% for way in class.class_ways.all %}
-            <div class="path-card">
+            <div class="path-card animate__animated animate__fadeInUp" style="animation-delay: {{ forloop.counter0|add:1 }}s">
                 <div class="path-icon">
                     <i class="fas fa-graduation-cap"></i>
                 </div>
                 <h3 class="path-title">{{ way.title }}</h3>
                 <p class="path-description">{{ way.description|truncatechars:100 }}</p>
+<!--                <div class="path-meta">-->
+<!--                    <span class="badge bg-light text-dark">-->
+<!--                        <i class="fas fa-book me-1"></i>-->
+<!--                        {{ way.activities }} محتوا-->
+<!--                    </span>-->
+<!--                </div>-->
                 <a href="{% url 'way_detail' way.id %}" class="btn btn-view-path">
                     <i class="fas fa-eye me-2"></i>
                     مشاهده مسیر
@@ -99,7 +148,75 @@
             {% endfor %}
         </div>
     </div>
+    {% else %}
+    <div class="empty-state animate__animated animate__fadeIn">
+        <div class="empty-state-icon">
+            <i class="fas fa-road fa-3x"></i>
+        </div>
+        <h3 class="empty-state-title">مسیر یادگیری تعریف نشده است</h3>
+        <p class="empty-state-description">در حال حاضر مسیر یادگیری برای این کلاس تعریف نشده است. لطفاً بعداً مراجعه کنید.</p>
+    </div>
     {% endif %}
+
+    <!-- Class Resources Section -->
+<!--    <div class="resources-section animate__animated animate__fadeIn">-->
+<!--        <div class="section-header">-->
+<!--            <h2 class="section-title">-->
+<!--                <i class="fas fa-file-alt me-2"></i>&nbsp;-->
+<!--                منابع آموزشی-->
+<!--            </h2>-->
+<!--            <p class="section-description">فایل‌ها و منابع مرتبط با این کلاس</p>-->
+<!--        </div>-->
+
+<!--        <div class="resources-grid">-->
+<!--            &lt;!&ndash; Sample resource items &ndash;&gt;-->
+<!--            <div class="resource-card">-->
+<!--                <div class="resource-icon">-->
+<!--                    <i class="fas fa-file-pdf"></i>-->
+<!--                </div>-->
+<!--                <div class="resource-details">-->
+<!--                    <h3 class="resource-title">جزوه فصل اول</h3>-->
+<!--                    <p class="resource-meta">PDF • 2.4MB</p>-->
+<!--                </div>-->
+<!--                <a href="#" class="btn btn-download">-->
+<!--                    <i class="fas fa-download"></i>-->
+<!--                </a>-->
+<!--            </div>-->
+
+<!--            <div class="resource-card">-->
+<!--                <div class="resource-icon">-->
+<!--                    <i class="fas fa-file-video"></i>-->
+<!--                </div>-->
+<!--                <div class="resource-details">-->
+<!--                    <h3 class="resource-title">ویدیوی جلسه اول</h3>-->
+<!--                    <p class="resource-meta">MP4 • 45MB</p>-->
+<!--                </div>-->
+<!--                <a href="#" class="btn btn-download">-->
+<!--                    <i class="fas fa-download"></i>-->
+<!--                </a>-->
+<!--            </div>-->
+
+<!--            <div class="resource-card">-->
+<!--                <div class="resource-icon">-->
+<!--                    <i class="fas fa-file-code"></i>-->
+<!--                </div>-->
+<!--                <div class="resource-details">-->
+<!--                    <h3 class="resource-title">کدهای نمونه</h3>-->
+<!--                    <p class="resource-meta">ZIP • 1.2MB</p>-->
+<!--                </div>-->
+<!--                <a href="#" class="btn btn-download">-->
+<!--                    <i class="fas fa-download"></i>-->
+<!--                </a>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="text-center mt-4">-->
+<!--            <a href="#" class="btn btn-view-all">-->
+<!--                <i class="fas fa-folder-open me-2"></i>-->
+<!--                مشاهده تمام منابع-->
+<!--            </a>-->
+<!--        </div>-->
+<!--    </div>-->
 </div>
 
 <style>
@@ -111,23 +228,44 @@
         --light: #f8f9fa;
         --dark: #212529;
         --gray: #6c757d;
+        --light-gray: #f1f3f5;
+        --white: #ffffff;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Vazirmatn', sans-serif;
+
+        {% if request.user.settings.last.theme %}
+        background-color: #1a1a2e;
+        {% else %}
+        background-color: #f8f9fe;
+        {% endif %}
+
+        color: var(--dark);
+        line-height: 1.6;
     }
 
     .class-detail-container {
         max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem 1rem;
+        margin: 2rem auto;
+        padding: 0 1rem;
     }
 
+    /* Header Section */
     .class-header {
         background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
         border-radius: 16px;
-        padding: 2rem;
+        padding: 2.5rem;
         color: white;
         margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-lg);
         position: relative;
         overflow: hidden;
+        z-index: 1;
     }
 
     .class-header::before {
@@ -135,10 +273,16 @@
         position: absolute;
         top: -50%;
         right: -50%;
-        width: 100%;
+        width: 200%;
         height: 200%;
         background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
-        z-index: 0;
+        z-index: -1;
+        animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
     .class-title-container {
@@ -146,84 +290,149 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 2rem;
-        position: relative;
-        z-index: 1;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .class-title-wrapper {
+        flex: 1;
+        min-width: 300px;
     }
 
     .class-title {
-        font-size: 2rem;
+        font-size: 2.2rem;
         font-weight: 900;
-        margin: 0;
+        margin: 0 0 0.5rem 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .class-meta {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
     }
 
     .btn-join {
-        background-color: white;
+        background-color: var(--white);
         color: var(--primary);
         border: none;
-        padding: 0.75rem 1.5rem;
+        padding: 0.75rem 1.75rem;
         border-radius: 50px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        display: flex;
+        font-weight: 700;
+        transition: var(--transition);
+        display: inline-flex;
         align-items: center;
+        box-shadow: var(--shadow-sm);
+        white-space: nowrap;
     }
 
     .btn-join:hover {
         background-color: var(--accent);
-        color: white;
+        color: var(--white);
         transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 8px 20px rgba(247, 37, 133, 0.3);
     }
 
+    /* Teacher Info */
     .teacher-info {
         display: flex;
         align-items: center;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-        position: relative;
-        z-index: 1;
+        gap: 2rem;
+        margin-bottom: 2.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .teacher-avatar img {
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid white;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border: 3px solid var(--white);
+        box-shadow: var(--shadow-md);
     }
 
     .teacher-details {
-        line-height: 1.4;
+        line-height: 1.6;
+        flex: 1;
     }
 
     .teacher-role {
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-weight: 500;
         opacity: 0.9;
         margin-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.9);
     }
 
     .teacher-name {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         font-weight: 700;
-        margin: 0;
+        margin: 0 0 0.5rem 0;
+        color: var(--white);
     }
 
+    .teacher-contact {
+        margin-top: 0.75rem;
+    }
+
+    .contact-link {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .contact-link:hover {
+        color: var(--white);
+        text-decoration: underline;
+    }
+
+    /* Class Description */
+    .class-description {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .class-description p {
+        margin-bottom: 0;
+        line-height: 1.8;
+    }
+
+    /* Assistants Section */
     .assistants-section {
-        position: relative;
-        z-index: 1;
+        margin-top: 1.5rem;
     }
 
     .section-subtitle {
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.9);
     }
 
     .assistants-list {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 1rem;
     }
 
@@ -231,42 +440,89 @@
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
         border-radius: 12px;
-        padding: 0.75rem 1rem;
+        padding: 1.25rem;
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        transition: all 0.3s ease;
+        gap: 1rem;
+        transition: var(--transition);
         border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .assistant-card:hover {
         background: rgba(255, 255, 255, 0.2);
-        transform: translateY(-3px);
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
 
     .assistant-avatar img {
-        width: 40px;
-        height: 40px;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
         object-fit: cover;
+        border: 2px solid var(--white);
+    }
+
+    .assistant-details {
+        flex: 1;
     }
 
     .assistant-name {
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .assistant-email {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        transition: var(--transition);
+    }
+
+    .assistant-email:hover {
+        color: var(--white);
+    }
+
+    /* Section Header */
+    .section-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 900;
+        {% if request.user.settings.last.theme %}
+        color: var(--primary);
+        {% else %}
+        color: var(--primary-dark);
+        {% endif %}
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .section-description {
+        color: var(--gray);
+        font-size: 1.1rem;
+        max-width: 700px;
+        margin: 0 auto;
     }
 
     /* Learning Paths Section */
     .learning-paths-section {
-        margin-top: 3rem;
-    }
-
-    .section-title {
-        font-size: 1.8rem;
-        font-weight: 900;
-        color: var(--primary-dark);
+    {% if request.user.settings.last.theme %}
+        background-color: var(--dark);
+    {% else %}
+        background-color: var(--white);
+    {% endif %}
+        border-radius: 16px;
+        padding: 2.5rem;
         margin-bottom: 2rem;
-        display: flex;
-        align-items: center;
+        box-shadow: var(--shadow-md);
     }
 
     .paths-grid {
@@ -276,81 +532,281 @@
     }
 
     .path-card {
-        background: white;
+    {% if request.user.settings.last.theme %}
+        background-color: var(--dark);
+    {% else %}
+        background-color: var(--white);
+    {% endif %}
         border-radius: 16px;
-        padding: 1.5rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
+        padding: 1.75rem;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
         position: relative;
         overflow: hidden;
         border: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
     }
 
     .path-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .path-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--primary), var(--accent));
+        transition: var(--transition);
+    }
+
+    .path-card:hover::after {
+        width: 8px;
     }
 
     .path-icon {
-        width: 60px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
         border-radius: 16px;
         background: linear-gradient(135deg, var(--primary), var(--accent));
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-size: 1.5rem;
+        color: var(--white);
+        font-size: 1.75rem;
         margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
     }
 
     .path-title {
-        font-size: 1.3rem;
-        font-weight: 700;
-        margin-bottom: 0.75rem;
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        {% if request.user.settings.last.theme %}
+        color: var(--light);
+        {% else %}
         color: var(--dark);
+        {% endif %}
     }
 
     .path-description {
         color: var(--gray);
         margin-bottom: 1.5rem;
-        line-height: 1.6;
+        line-height: 1.7;
+        flex: 1;
+    }
+
+    .path-meta {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
     }
 
     .btn-view-path {
         display: inline-flex;
         align-items: center;
-        padding: 0.5rem 1.5rem;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
         background: linear-gradient(135deg, var(--primary), var(--secondary));
-        color: white;
+        color: var(--white);
         border-radius: 50px;
         text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s ease;
+        font-weight: 600;
+        transition: var(--transition);
         border: none;
+        width: 100%;
+        margin-top: auto;
     }
 
     .btn-view-path:hover {
         transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-        color: white;
+        box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+        color: var(--white);
+        background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+    }
+
+    /* Empty State */
+    .empty-state {
+        background-color: var(--white);
+        border-radius: 16px;
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+    }
+
+    .empty-state-icon {
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+
+    .empty-state-description {
+        color: var(--gray);
+        max-width: 500px;
+        margin: 0 auto 1.5rem;
+    }
+
+    /* Resources Section */
+    .resources-section {
+        background-color: var(--white);
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: var(--shadow-md);
+    }
+
+    .resources-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .resource-card {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 1.25rem;
+        border-radius: 12px;
+        background-color: var(--light-gray);
+        transition: var(--transition);
+    }
+
+    .resource-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .resource-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background-color: var(--primary);
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .resource-icon .fa-file-pdf {
+        color: #ff4d4d;
+    }
+
+    .resource-icon .fa-file-video {
+        color: #ff6b6b;
+    }
+
+    .resource-icon .fa-file-code {
+        color: #69db7c;
+    }
+
+    .resource-details {
+        flex: 1;
+    }
+
+    .resource-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .resource-meta {
+        font-size: 0.85rem;
+        color: var(--gray);
+    }
+
+    .btn-download {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--white);
+        color: var(--primary);
+        border: none;
+        transition: var(--transition);
+    }
+
+    .btn-download:hover {
+        background-color: var(--primary);
+        color: var(--white);
+    }
+
+    .btn-view-all {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.75rem;
+        background-color: var(--primary);
+        color: var(--white);
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+        border: none;
+    }
+
+    .btn-view-all:hover {
+        background-color: var(--primary-dark);
+        color: var(--white);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
     }
 
     /* Responsive Styles */
-    @media (max-width: 768px) {
-        .class-title-container {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
+    @media (max-width: 992px) {
+        .class-header {
+            padding: 2rem;
         }
 
         .teacher-info {
             flex-direction: column;
             align-items: flex-start;
+            gap: 1.5rem;
+        }
+
+        .teacher-avatar img {
+            width: 80px;
+            height: 80px;
+        }
+
+        .teacher-name {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .class-detail-container {
+            padding: 0 0.75rem;
+        }
+
+        .class-header {
+            padding: 1.75rem;
+            border-radius: 12px;
+        }
+
+        .class-title {
+            font-size: 1.8rem;
         }
 
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+        }
+
+        .paths-grid, .resources-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         }
     }
 
@@ -363,9 +819,28 @@
             font-size: 1.5rem;
         }
 
-        .paths-grid {
+        .teacher-name {
+            font-size: 1.3rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+        }
+
+        .paths-grid, .resources-grid {
             grid-template-columns: 1fr;
+        }
+
+        .path-card {
+            padding: 1.5rem;
+        }
+
+        .path-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
         }
     }
 </style>
+</body>
 </html>

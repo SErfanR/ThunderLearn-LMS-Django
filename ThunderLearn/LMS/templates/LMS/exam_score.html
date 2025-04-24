@@ -343,12 +343,22 @@
                                 
                                 {% if exam_answers|index:i == 0 %}
                                     <!-- Skipped Question -->
-                                    <td class="answer-skipped">پاسخی ثبت نشد</td>
+                                    <td class="answer-skipped">-</td>
                                     <td class="answer-skipped">حذف شده</td>
                                     <td>
                                         <span class="badge bg-secondary rounded-pill">
                                             <i class="fas fa-minus-circle me-1"></i>
                                             حذف شده
+                                        </span>
+                                    </td>
+                                {% elif user_answers|index:i == 0 %}
+                                    <!-- No Answer -->
+                                    <td class="answer-correct">پاسخی ثبت نشد</td>
+                                    <td class="correct-answer">{{ exam_answers|index:i }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary rounded-pill">
+                                            <i class="fas fa-times-circle me-1"></i>
+                                            بدون پاسخ
                                         </span>
                                     </td>
                                 {% elif user_answers|index:i == exam_answers|index:i %}

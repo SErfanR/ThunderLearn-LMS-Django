@@ -139,6 +139,7 @@
             transition: var(--transition);
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .btn-choice:hover {
@@ -167,30 +168,67 @@
             color: var(--primary);
         }
 
-        /* Submit Button */
-        .btn-submit {
-            display: block;
-            width: 100%;
+        /* Navigation Container */
+        .nav-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Navigation Buttons */
+        .btn-nav {
+            flex: 1;
             padding: 0.75rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--white);
             border: none;
             border-radius: 8px;
             font-weight: 700;
             font-size: 1.1rem;
             transition: var(--transition);
-            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
-        .btn-submit:hover {
+        .btn-prev {
+            background: var(--light-gray);
+            color: var(--gray);
+        }
+
+        .btn-prev:hover {
+            background: var(--light);
+            color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-skip {
+            background: var(--light-gray);
+            color: var(--gray);
+        }
+
+        .btn-skip:hover {
+            background: var(--light);
+            color: var(--danger);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+        }
+
+        .btn-next:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
-            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
         }
 
         /* Progress Bar */
         .progress-container {
             margin-bottom: 1.5rem;
+            position: relative;
         }
 
         .progress {
@@ -204,19 +242,32 @@
             transition: width 0.5s ease;
         }
 
+        .progress-text {
+            position: absolute;
+            left: 0;
+            top: -1.5rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
         /* Responsive Styles */
         @media (max-width: 768px) {
             .question-card {
                 padding: 1.5rem;
             }
-            
+
             .question-body {
                 font-size: 1.1rem;
             }
-            
+
             .btn-choice {
                 padding: 0.75rem 1.25rem;
                 font-size: 0.95rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 0.75rem;
             }
         }
 
@@ -224,30 +275,30 @@
             .exam-container {
                 padding: 0 0.75rem;
             }
-            
+
             .part-info {
                 padding: 1.25rem;
             }
-            
+
             .part-title {
                 font-size: 1.1rem;
             }
-            
+
             .question-card {
                 padding: 1.25rem 1rem;
             }
-            
+
             .question-number {
                 width: 2.5rem;
                 height: 2.5rem;
                 font-size: 0.9rem;
                 left: 1rem;
             }
-            
+
             .btn-choice {
                 padding: 0.75rem 1rem 0.75rem 2.5rem;
             }
-            
+
             .btn-choice::before {
                 left: 0.75rem;
             }
@@ -256,13 +307,6 @@
 </head>
 <body>
     <div class="exam-container animate__animated animate__fadeIn">
-        <!-- Progress Bar -->
-        <div class="progress-container">
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: {{ progress }}%" 
-                     aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-        </div>
 
         <!-- Part Info -->
         <div class="part-info animate__animated animate__fadeIn">
@@ -284,20 +328,41 @@
                 {% csrf_token %}
                 <div class="choices-container">
                     {% for choice in question.choices.all %}
-                        <input type="radio" class="btn-check" name="answer" 
-                               id="choice-{{ forloop.counter }}" value="{{ forloop.counter }}" 
-                               autocomplete="off">
-                        <label class="btn-choice" for="choice-{{ forloop.counter }}" 
+                        <input type="radio" class="btn-check" name="answer"
+                               id="choice-{{ forloop.counter }}" value="{{ forloop.counter }}"
+                               autocomplete="off" {% if user_answer == forloop.counter %}checked{% endif %}>
+                        <label class="btn-choice" for="choice-{{ forloop.counter }}"
                                data-number="{{ forloop.counter }})">
                             {{ choice.body }}
                         </label>
                     {% endfor %}
                 </div>
 
-                <button type="submit" class="btn-submit animate__animated animate__pulse animate__infinite">
-                    <i class="fas fa-paper-plane me-2"></i>
-                    ثبت پاسخ و ادامه
-                </button>
+                <div class="nav-container">
+                    {% if q_num > 1 %}
+                    {% with a=q_num|add:-1 %}
+                        <a type="submit" name="action" href="{% url 'question_view' part.exam.id a %}" class="btn-nav btn-prev animate__animated animate__fadeInLeft">
+                            <i class="fas fa-arrow-right"></i>
+                            سوال قبلی
+                        </a>
+                    {% endwith %}
+                    {% endif %}
+
+                    <button type="submit" name="action" value="skip" class="btn-nav btn-skip animate__animated animate__fadeInUp">
+                        <i class="fas fa-forward"></i>
+                        رد کردن
+                    </button>
+
+                    <button type="submit" name="action" value="next" class="btn-nav btn-next animate__animated animate__pulse animate__infinite">
+                        {% if q_num == total_questions %}
+                            <i class="fas fa-flag-checkered"></i>
+                            پایان آزمون
+                        {% else %}
+                            <i class="fas fa-arrow-left"></i>
+                            سوال بعدی
+                        {% endif %}
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -313,6 +378,26 @@
                 progressBar.style.width = currentWidth;
             }, 300);
         });
+
+        // Confirm skip action
+        document.querySelector('.btn-skip').addEventListener('click', function(e) {
+            if (!confirm('آیا مطمئن هستید می‌خواهید این سوال را رد کنید؟')) {
+                e.preventDefault();
+            }
+        });
+
+        // Remember scroll position for back button
+        window.onbeforeunload = function() {
+            sessionStorage.setItem('scrollPosition', window.scrollY);
+        };
+
+        window.onload = function() {
+            const scrollPosition = sessionStorage.getItem('scrollPosition');
+            if (scrollPosition) {
+                window.scrollTo(0, scrollPosition);
+                sessionStorage.removeItem('scrollPosition');
+            }
+        };
     </script>
 </body>
 </html>

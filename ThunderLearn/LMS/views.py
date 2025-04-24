@@ -43,8 +43,10 @@ def way_detail(request, id):
 def exam_view(request, id):
     this_exam = Exam.objects.get(id=id)
     for c in this_exam.classrooms.all():
-        if request.user in c.students.all():
+        if request.user in c.students.all() and not UserScore.objects.filter(user=request.user, exam=this_exam).exists():
             return render(request, 'LMS/exam_view.html', {'exam': this_exam})
+        else:
+            return redirect('user_score', this_exam.id)
 
 
 class QuestionView(LoginRequiredMixin, View):

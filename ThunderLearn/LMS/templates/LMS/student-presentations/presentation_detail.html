@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ presentation.title }} - صاعقه</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --success: #1cc88a;
+            --info: #36b9cc;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        body {
+        {% if request.user.settings.last.theme %}
+            background-color: #1a1a2e;
+        {% else %}
+            background-color: #f8f9fe;
+        {% endif %}
+            color: white;
+            min-height: 100vh;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .presentation-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .presentation-title {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .presentation-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .carousel-container {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            margin-bottom: 3rem;
+            {% if request.user.settings.last.theme %}
+            background-color: var(--dark);
+            {% else %}
+            background-color: var(--light);
+            {% endif %};
+        }
+
+        .carousel {
+            border-radius: 16px;
+        }
+
+        .carousel-inner {
+            border-radius: 16px;
+            max-height: 70vh;
+        }
+
+        .carousel-item {
+            height: 100%;
+            {% if request.user.settings.last.theme %}
+            background-color: var(--dark);
+            {% else %}
+            background-color: var(--light);
+            {% endif %}
+        }
+
+        .carousel-item img {
+            object-fit: contain;
+            height: 100%;
+            width: 100%;
+            background-color: var(--dark);
+        }
+
+        .slide-body {
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .carousel-control-prev, .carousel-control-next {
+            width: 5%;
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: rgba(67, 97, 238, 0.7);
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            background-size: 1.5rem;
+        }
+
+        .carousel-indicators {
+            bottom: -50px;
+        }
+
+        .carousel-indicators button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--gray);
+            opacity: 0.5;
+            margin: 0 5px;
+        }
+
+        .carousel-indicators button.active {
+            background-color: var(--primary);
+            opacity: 1;
+        }
+
+        .no-slides-message {
+            text-align: center;
+            padding: 3rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            margin-top: 2rem;
+        }
+
+        .no-slides-message h4 {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .presentation-title {
+                font-size: 1.5rem;
+            }
+
+            .carousel-inner {
+                max-height: 50vh;
+            }
+
+            .slide-body {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .presentation-container {
+                padding: 1rem;
+            }
+
+            .carousel-inner {
+                max-height: 40vh;
+            }
+
+            .slide-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+{% include 'student-nav.html' %}
+<br>
+<br>
+<br>
+<br>
+    <div class="presentation-container">
+        <div class="presentation-header">
+            <h1 class="presentation-title">{{ presentation.title }}</h1>
+            <div class="presentation-description">{{ presentation.des|safe }}</div>
+        </div>
+
+        {% if presentation.slides.count != 0 %}
+        <div class="carousel-container">
+            <div id="presentationCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    {% for slide in presentation.slides.all %}
+                    <button type="button" data-bs-target="#presentationCarousel"
+                            data-bs-slide-to="{{ forloop.counter0 }}"
+                            {% if forloop.first %}class="active" aria-current="true"{% endif %}>
+                    </button>
+                    {% endfor %}
+                </div>
+
+                <div class="carousel-inner">
+                    {% for slide in presentation.slides.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <form class="form-horizontal" style="width:100%; color: {% if request.user.settings.last.theme %}white{% else %}black{% endif %};">
+                          <center>
+                            <br>
+                            <br>
+                            <fieldset>
+                                <legend>اسلاید {{ forloop.counter }}</legend>
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                      {{ slide.body|safe }}
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <br>
+                            <br>
+                            </center>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#presentationCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">قبلی</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#presentationCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">بعدی</span>
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="no-slides-message">
+            <h4><i class="fas fa-info-circle me-2"></i>اسلایدی برای نمایش وجود ندارد</h4>
+        </div>
+        {% endif %}
+        <h5><a href="{% url 'dashboard' %}"> پایان </a></h5>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // فعال کردن کاروسل
+        const presentationCarousel = new bootstrap.Carousel('#presentationCarousel', {
+            interval: 10000,
+            wrap: true,
+            keyboard: true
+        });
+
+        // افزودن قابلیت کلیک روی اندیکاتورها
+        document.querySelectorAll('.carousel-indicators button').forEach((button, index) => {
+            button.addEventListener('click', () => {
+                presentationCarousel.to(index);
+            });
+        });
+
+        // افزودن کنترل‌های صفحه‌کلید
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                presentationCarousel.next();
+            } else if (e.key === 'ArrowLeft') {
+                presentationCarousel.prev();
+            }
+        });
+    </script>
+</body>
+</html>

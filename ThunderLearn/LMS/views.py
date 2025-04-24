@@ -840,6 +840,44 @@ class WayAddExamView(LoginRequiredMixin, View):
         return redirect('teacher_way', pk=pk)
 
 
+class WayAddPresentView(LoginRequiredMixin, View):
+    def setup(self, request, *args, **kwargs):
+        self.way = get_object_or_404(Way, pk=kwargs['pk'])
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        classrooms = self.way.classrooms.all()
+        teachers = []
+        for classroom in classrooms:
+            teachers.append(classroom.teacher)
+        if request.user in teachers:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.error(self.request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def get(self, request, pk):
+        classrooms = self.way.classrooms.all()
+        presents = []
+        for classroom in classrooms:
+            presents.append(classroom.class_presents.all())
+        return render(request, 'LMS/way_add_present.html', context={
+            'way': self.way,
+            'presents': presents,
+        })
+
+    def post(self, request, pk):
+        present = int(request.POST.get('exam'))
+        text = request.POST.get('text')
+        new = [2, present, f"{text}"]
+        activities = self.way.activities
+        activities = json.loads(activities)
+        activities.append(new)
+        self.way.activities = json.dumps(activities)
+        self.way.save()
+        return redirect('teacher_way', pk=pk)
+
+
 class WayMoveActivity(LoginRequiredMixin, View):
     def setup(self, request, *args, **kwargs):
         self.way = get_object_or_404(Way, pk=kwargs['pk'])
@@ -978,4 +1016,29 @@ class PresentationDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView
 
     def get_success_url(self):
         return reverse('teacher_presents')
+
+class PresentationDetailView(TemplateView):
+    template_name = 'LMS/teacher-presentations/present_detail.html'
+
+    # TODO: dispatch
+    def get_context_data(self, **kwargs):
+        presentation = get_object_or_404(Presentation, pk=kwargs['pk'])
+        context = super().get_context_data()
+        context['presentation'] = presentation
+        return context
+
+
+class SlideUpdateView():
+    pass
+
+
+class StudentPresentationView(TemplateView):
+    template_name = 'LMS/student-presentations/presentation_detail.html'
+
+    # TODO: dispatch
+    def get_context_data(self, **kwargs):
+        presentation = get_object_or_404(Presentation, pk=kwargs['pk'])
+        context = super().get_context_data()
+        context['presentation'] = presentation
+        return context
 

@@ -18,6 +18,9 @@ urlpatterns = [
     path('exam/<int:id>/question/<int:q>/', views.QuestionView.as_view(), name='question_view'),
     path('exam/<int:id>/score/', views.UserScoreView.as_view(), name='user_score'),
 
+    # presentation-related URLs
+    path('presentation/<int:pk>/', views.StudentPresentationView.as_view(), name='student_present_detail'),
+
     # teacher URLs
     # teacher dashboard
     path('dashboard/', views.TeacherDashboardView.as_view(), name='teacher_dashboard'),
@@ -58,6 +61,7 @@ urlpatterns = [
     path('teacher/class/<int:pk>/ways/', views.ClassWayListView.as_view(), name='class_ways'),
     path('teacher/way/<int:pk>/', views.WayDetailView.as_view(), name='teacher_way'),
     path('teacher/way/<int:pk>/add-exam/', views.WayAddExamView.as_view(), name='way_add_exam'),
+    path('teacher/way/<int:pk>/add-present/', views.WayAddPresentView.as_view(), name='way_add_present'),
     path('teacher/way/<int:pk>/move/<str:move>/', views.WayMoveActivity.as_view(), name='way_move_up'),
     path('teacher/way/<int:pk>/delete/', views.WayDeleteActivity.as_view(), name='way_delete'),
     path('teacher/class/<int:pk>/way/create/', views.WayCreateView.as_view(), name='way_create'),
@@ -67,4 +71,5 @@ urlpatterns = [
     path('teacher/presentation/', views.TeacherPresentationsListView.as_view(), name='teacher_presents'),
     path('teacher/presentation/create/', views.PresentationCreateView.as_view(), name='present_create'),
     path('teacher/presentation/<int:pk>/delete/', views.PresentationDeleteView.as_view(), name='present_delete'),
+    path('teacher/presentation/<int:pk>/', views.PresentationDetailView.as_view(), name='present_detail'),
 ]

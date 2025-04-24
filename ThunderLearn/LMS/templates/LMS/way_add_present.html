@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'teacher-offcanvas.html' %}
+
+<div class="card bg-secondary-subtle border border-secondary" id="card_classes">
+    <div class="card-body text-center">
+        <h4 class="text-dark lalezar" id="title">افزودن ارائه به مسیر "{{ way.title }}"</h4>
+
+        <div class="mt-4">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <div class="input-group mb-3" dir="ltr">
+                        <span class="input-group-text bg-light">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                            </svg>
+                        </span>
+                        <input dir="rtl" type="text" id="exam-search" class="form-control" placeholder="جستجوی ارائه...">
+                    </div>
+
+                    <select name="exam" class="form-select border-2" id="id_exam" size="8" required style="border-radius: 8px; width: 100%;">
+                        {% for queryset in presents %}
+                            {% for present in queryset %}
+                                <option value="{{ present.pk }}" data-search="{{ present.title|lower }}">
+                                    {{ present.title }}
+                                </option>
+                            {% endfor %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <input type="text" class="form-control border-2" name="text" id="exam-title"
+                           placeholder="عنوان نمایشی (مثال: ارائه میانترم ریاضی)" required>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <button type="reset" class="btn btn-h btn-outline-secondary px-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z"/>
+                            <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466"/>
+                        </svg>
+                        بازنشانی
+                    </button>
+                    <a href="{% url 'teacher_way' pk=way.pk %}" class="btn btn-h" style="background: linear-gradient(45deg, #ff416c, #ff4b2b); color: white;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                        </svg>
+                        بازگشت
+                    </a>
+                    <button type="submit" class="btn btn-h" style="background: linear-gradient(45deg, #09009f, #00ff95); color: white;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                        </svg>
+                        تأیید و افزودن
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    #card_classes {
+        margin-top: 10vh;
+        margin-bottom: 10vh;
+        margin-right: 70px;
+        margin-left: 5vw;
+        padding-top: 1vh;
+    }
+    #title {
+        background: -webkit-linear-gradient(45deg, #09009f, #00ff95 80%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: xx-large;
+        padding-bottom: 5px;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: 0.4s ease-out;
+    }
+    .btn-h{
+        border: none;
+        transition: 0.4s ease-out;
+    }
+    .btn-h:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    #id_exam {
+        border: 2px solid #dee2e6;
+    }
+    #id_exam option {
+        padding: 8px 12px;
+        border-bottom: 1px solid #eee;
+    }
+    #id_exam option:hover {
+        background-color: #f8f9fa;
+    }
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        border-color: #86b7fe;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('exam-search');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const options = document.getElementById('id_exam').options;
+
+            for (let option of options) {
+                const text = option.getAttribute('data-search') || option.text.toLowerCase();
+                option.hidden = !text.includes(searchTerm);
+            }
+        });
+
+        // Form validation
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+
+        // Auto-fill exam title when selection changes
+        const examSelect = document.getElementById('id_exam');
+        const examTitle = document.getElementById('exam-title');
+
+        examSelect.addEventListener('change', function() {
+            if (this.selectedOptions.length > 0 && !examTitle.value) {
+                examTitle.value = this.selectedOptions[0].text.split(' - ')[0];
+            }
+        });
+    });
+</script>
+{% endblock %}

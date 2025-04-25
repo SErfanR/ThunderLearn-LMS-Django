@@ -13,3 +13,13 @@ An open-source LMS with lots of new features
 **«ما متفاوتیم چون کار ها را از راه متفاوتی انجام می دهیم»**
 
 همیشه متفاوت بودن به معنی انجام کار های متفاوت نیست بلکه گاهی به معنی انجام همان کار به شیوه ای دیگر است.
+
+# اجرای پروژه
+windows:
+```bash
+py manage.py makemigrations
+py manage.py migrate
+py manage.py runserver
+```
+# فیلم معرفی
+(https://serfanr.storage.c2.liara.space/Sequence%2001_1.mp4)

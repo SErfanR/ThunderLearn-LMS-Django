@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% block title %}صاعقه - حذف مسیر{% endblock %}
 {% block content %}
     <div class="alert alert-danger" id="alert">
         <form method="post">
             {% csrf_token %}
-            <h5 class="alert-heading"> حذف سوال </h5>
+            <h5 class="alert-heading"> حذف مسیر </h5>
             <h4> آیا از حذف مسیر
                 "{{ way.title }}"
                 مطمئن هستید؟ </h4>

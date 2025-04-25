@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block title %}صاعقه - {{ class.name }}{% endblock %}
 {% block content %}
 {% include 'teacher-offcanvas.html' %}
     <a href="{% url 'class_ways' class.pk %}" class="btn btn-primary"> مسیر های یادگیری کلاس {{ class.name }} </a>

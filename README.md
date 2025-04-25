@@ -21,5 +21,9 @@ py manage.py makemigrations
 py manage.py migrate
 py manage.py runserver
 ```
+یک ادمین ایجاد کنید و در بخش گروه ها دو گروه Teachers و Students برای کاربران ایجاد کنید
+```
+py manage.py createsuperuser
+```
 # فیلم معرفی
 (https://serfanr.storage.c2.liara.space/Sequence%2001_1.mp4)

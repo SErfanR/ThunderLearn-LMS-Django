@@ -681,11 +681,16 @@
             <a href="/" class="nav-link">صفحه اصلی</a>
             <a href="{% url 'about_us' %}" class="nav-link">درباره ما</a>
             <a href="{% url 'contact_us' %}" class="nav-link">تماس با ما</a>
+            <a href="{% url 'guide' %}" class="nav-link">راهنما</a>
         </div>
 
         <div class="nav-actions">
+            {% if not request.user.is_authenticated %}
             <a href="{% url 'login' %}" class="btn btn-outline">ورود</a>
             <a href="{% url 'register' %}" class="btn btn-primary">ثبت‌نام</a>
+            {% else %}
+            <a href="{% url 'dashboard' %}" class="btn btn-primary">داشبورد</a>
+            {% endif %}
         </div>
     </nav>
 
@@ -717,7 +722,7 @@
 همیشه متفاوت بودن به معنی انجام کار های متفاوت نیست بلکه گاهی به معنی انجام همان کار به شیوه ای دیگر است.</p>
             </div>
             <div class="about-image">
-                <img src="https://wallpapercave.com/wp/Yavh5My.jpg" alt="تیم صاعقه">
+                <img src="https://wallpapercave.com/wp/Yavh5My.jpg" alt="صاعقه">
             </div>
         </div>
 
@@ -740,33 +745,10 @@
                     <i class="fas fa-bolt"></i>
                     صاعقه
                 </a>
-                <p>سیستم مدیریت یادگیری پیشرفته برای مدارس و آموزشگاه‌ها با قابلیت‌های منحصر به فرد</p>
-                <div class="social-links">
+                <p>سیستم مدیریت یادگیری پیشرفته برای معلم و دانش آموزان با قابلیت‌های منحصر به فرد</p>                <div class="social-links">
                     <a target="_blank" href="https://github.com/SErfanR/ThunderLearn-LMS-Django" class="social-link"><i class="fab fa-github"></i></a>
                 </div>
             </div>
-
-<!--            <div class="footer-links">-->
-<!--                <h3>لینک‌های سریع</h3>-->
-<!--                <ul>-->
-<!--                    <li><a href="#">صفحه اصلی</a></li>-->
-<!--                    <li><a href="#">درباره ما</a></li>-->
-<!--                    <li><a href="#">ویژگی‌ها</a></li>-->
-<!--                    <li><a href="#">قیمت‌گذاری</a></li>-->
-<!--                    <li><a href="#">تماس با ما</a></li>-->
-<!--                </ul>-->
-<!--            </div>-->
-
-<!--            <div class="footer-links">-->
-<!--                <h3>خدمات</h3>-->
-<!--                <ul>-->
-<!--                    <li><a href="#">مدیریت دانش‌آموزان</a></li>-->
-<!--                    <li><a href="#">برگزاری آزمون آنلاین</a></li>-->
-<!--                    <li><a href="#">گزارش‌های تحلیلی</a></li>-->
-<!--                    <li><a href="#">کلاس مجازی</a></li>-->
-<!--                    <li><a href="#">پنل والدین</a></li>-->
-<!--                </ul>-->
-<!--            </div>-->
         </div>
     </footer>
 

@@ -12,5 +12,5 @@ class ContactUsView(TemplateView):
     template_name = 'home/contact_us.html'
 
 
-class VideoView(TemplateView):
-    template_name = 'home/video.html'
+class GuideView(TemplateView):
+    template_name = 'home/guide.html'

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import json
 from ckeditor.fields import RichTextField
+from django.urls import reverse
 
 
 class Classroom(models.Model):
@@ -95,6 +96,9 @@ class Presentation(models.Model):
     author = models.ForeignKey(User, related_name='presentations', on_delete=models.CASCADE)
     classroom = models.ManyToManyField(Classroom, related_name='class_presents')
     des = RichTextField(blank=True)
+
+    def get_absolute_url(self):
+        return reverse('teacher_presents')
 
 
 class Slide(models.Model):

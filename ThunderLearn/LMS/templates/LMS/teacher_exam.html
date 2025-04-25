@@ -172,7 +172,7 @@
                                                           <form method="post" action="{% url 'choice_update' choice.pk %}" class="d-flex">
                                                               {% csrf_token %}
                                                               <a class="btn" style="cursor: default;">{{ forloop.counter }})</a>
-                                                              <input type="text" class="form-control" value="{{ choice.body }}" name="body">
+                                                              <input type="text" class="form-control" value="{{ choice.body }}" name="body" dir="ltr">
                                                               &nbsp;
                                                               <input type="submit" value="تایید" class="btn btn-sm btn-h" style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
                                                               &nbsp;
@@ -185,7 +185,7 @@
                                                       <form method="post" action="{% url 'choice_create' question.pk %}" class="d-flex">
                                                           {% csrf_token %}
                                                           <a class="btn btn-h disabled">{{ question.choices.count|add:"1" }})</a>
-                                                          <input type="text" name="body" class="form-control" required>
+                                                          <input type="text" name="body" class="form-control" required dir="ltr">
                                                           &nbsp;
                                                           <input type="submit" value="افزودن" class="btn btn-sm btn-h" style="background: linear-gradient(45deg, #09009f, #00ff95); color: white;">
                                                       </form>
@@ -225,7 +225,7 @@
                                     <div class="d-flex">
 
                                         <a class="form-label btn" style="cursor: default;">متن سوال</a>
-                                        <textarea name="body" cols="40" rows="10" required id="id_body" class="form-control" style="height: 70px;"></textarea>
+                                        <textarea name="body" cols="40" rows="10" required id="id_body" class="form-control" style="height: 70px;" dir="ltr"></textarea>
                                         &nbsp;
 
                                         <button type="submit" class="btn btn-lg btn-h" style="background: linear-gradient(45deg, #09009f, #00ff95); color: white;">

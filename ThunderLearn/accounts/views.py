@@ -32,6 +32,10 @@ class RegisterView(FormView):
 
         return super(RegisterView, self).form_valid(form)
 
+    def form_invalid(self, form):
+        messages.error(self.request, f'{form.errors}')
+        return self.render_to_response(self.get_context_data(form=form))
+
 
 def change_theme(request):
     if request.user.settings.exists():  # Fixed typo from 'exsits' to 'exists'

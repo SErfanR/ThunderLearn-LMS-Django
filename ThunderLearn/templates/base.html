@@ -9,12 +9,18 @@
 </head>
 <body dir="rtl" data-bs-theme="light">
     {% load static %}
+    {% if user.is_authenticated %}
     {% include "navbar.html" %}
+    {% endif %}
     {% include "messages.html" %}
     {% block content %}
     {% endblock %}
+    {% if user.is_authenticated %}
     {% include "footer.html" %}
+    {% endif %}
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Lalezar&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Lalezar&family=Vazirmatn:wght@100..900&display=swap');
     * {
         transition: 0.5s ease-in-out;
     }
@@ -22,7 +28,7 @@
         background-color:#262626 ;
     }
     .lalezar {
-        font-family: "Lalezar", serif;
+        font-family: "Lalezar", sans-serif;
         font-weight: 400;
         font-style: normal;
     }

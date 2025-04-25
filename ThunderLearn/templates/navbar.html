@@ -26,9 +26,6 @@
                             {% endif %}
                         </a>
                         <ul class="dropdown-menu text-small shadow" dir="rtl">
-                            <li><a class="dropdown-item" href="#">تنظیمات</a></li>
-                            <li><a class="dropdown-item" href="#">پروفایل</a></li>
-                            <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="post" action="{% url 'logout' %}">
                                     {% csrf_token %}

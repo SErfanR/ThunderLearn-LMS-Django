@@ -2,6 +2,7 @@
 {% block title %}صاعقه - {{ exam.title }}{% endblock %}
 {% block content %}
 {% include 'teacher-offcanvas.html' %}
+{% load dmd_extras %}
     <a href="scores/" class="btn btn-primary"> نتایج ازمون </a>
     <div class="card bg-secondary-subtle border border-secondary text-center" id="card_classes">
         <div class="card-body">
@@ -162,7 +163,7 @@
                                                       <br>
                                                       <form method="post" action="{% url 'question_update' question.pk %}" class="d-flex">
                                                           {% csrf_token %}
-                                                          <textarea class="form-control" style="height: 20px;" name="body">{{ question.body }}</textarea>
+                                                          <textarea class="form-control" style="height: 20px;" name="body" dir="ltr">{{ question.body }}</textarea>
                                                           &nbsp;
                                                           <input type="submit" value="تایید" class="btn btn-sm btn-h" style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
                                                       </form>
@@ -188,6 +189,15 @@
                                                           &nbsp;
                                                           <input type="submit" value="افزودن" class="btn btn-sm btn-h" style="background: linear-gradient(45deg, #09009f, #00ff95); color: white;">
                                                       </form>
+                                                      <hr>
+                                                      <h4 class="lalezar">
+                                                      پیش نمایش:
+                                                          </h4>
+                                                      <hr>
+                                                          {{ question.body|render_markdown }}
+                                                      {% for choice in question.choices.all %}
+                                                        {{ choice.body|render_markdown }}
+                                                      {% endfor %}
                                                   </div>
                                               </div>
                                           </div>

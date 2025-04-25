@@ -306,6 +306,7 @@
     </style>
 </head>
 <body>
+{% load dmd_extras %}
     <div class="exam-container animate__animated animate__fadeIn">
 
         <!-- Part Info -->
@@ -322,7 +323,7 @@
             <div class="question-number animate__animated animate__bounceIn">
                 {{ q_num }}
             </div>
-            <h4 class="question-body">{{ question.body }}</h4>
+            <h4 class="question-body">{{ question.body|render_markdown }}</h4>
 
             <form method="post">
                 {% csrf_token %}
@@ -333,7 +334,7 @@
                                autocomplete="off" {% if user_answer == forloop.counter %}checked{% endif %}>
                         <label class="btn-choice" for="choice-{{ forloop.counter }}"
                                data-number="{{ forloop.counter }})">
-                            {{ choice.body }}
+                            {{ choice.body|render_markdown }}
                         </label>
                     {% endfor %}
                 </div>

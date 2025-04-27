@@ -6,6 +6,7 @@ from .forms import RegisterForm
 from .models import Settings
 from django.contrib.auth import login
 from django.shortcuts import redirect
+from django.contrib.auth.models import Group
 
 
 class UserLoginView(LoginView):
@@ -24,6 +25,12 @@ class RegisterView(FormView):
     form_class = RegisterForm
     redirect_authenticated_user = True
     success_url = reverse_lazy('dashboard')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['s_group'] = Group.objects.get(name='Students')
+        context['t_group'] = Group.objects.get(name='Teachers')
+        return context
 
     def form_valid(self, form):
         user = form.save()

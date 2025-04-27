@@ -26,11 +26,11 @@ class DefaultCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         success_redirect_url (str): Base URL to redirect to after a successful update.
     """
 
-    fields: list[str]         = ['body']
-    success_message: str      = 'آیتم با موفقیت ایجاد شد'
-    unauthorized_message: str = 'شما به این صفحه دسترسی ندارید'
-    error_redirect_url: str   = 'dashboard'
-    success_redirect_url: str = 'teacher_exam'
+    fields = ['body']
+    success_message = 'آیتم با موفقیت ایجاد شد'
+    unauthorized_message = 'شما به این صفحه دسترسی ندارید'
+    error_redirect_url = 'dashboard'
+    success_redirect_url = 'teacher_exam'
 
     def get_queryset(self):
         """
@@ -101,12 +101,12 @@ class DefaultUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         success_redirect_url (str): Base URL to redirect to after a successful update.
     """
 
-    fields: list[str]         = ['body']
-    success_message: str      = 'آیتم با موفقیت تغییر کرد'
-    error_message: str        = 'بدنه آیتم تغییری نکرده است'
-    unauthorized_message: str = 'شما به این صفحه دسترسی ندارید'
-    error_redirect_url: str   = 'dashboard'
-    success_redirect_url: str = 'teacher_exam'
+    fields = ['body']
+    success_message = 'آیتم با موفقیت تغییر کرد'
+    error_message = 'بدنه آیتم تغییری نکرده است'
+    unauthorized_message = 'شما به این صفحه دسترسی ندارید'
+    error_redirect_url = 'dashboard'
+    success_redirect_url = 'teacher_exam'
 
     def get_queryset(self):
         """

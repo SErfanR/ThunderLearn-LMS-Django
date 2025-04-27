@@ -31,6 +31,7 @@ urlpatterns = [
     path('teacher/class/create/', views.ClassCreateView.as_view(), name='class_create'),
     path('teacher/class/<int:pk>/join-requests/', views.ClassJoinListView.as_view(), name='class_requests_list'),
     path('teacher/class/<int:pk>/join-requests/accept/<int:r_pk>/', views.ClassJoinAcceptView.as_view(), name='class_request_accept'),
+    path('teacher/class/<int:pk>/join-requests/reject/<int:r_pk>/', views.ClassJoinRejectView.as_view(), name='class_request_reject'),
 
     # teacher exam-related URLs
     path('teacher/exam/', views.TeacherExamListView.as_view(), name='teacher_exams'),

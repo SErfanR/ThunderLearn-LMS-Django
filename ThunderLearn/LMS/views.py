@@ -452,6 +452,32 @@ class ClassJoinAcceptView(LoginRequiredMixin, SuccessMessageMixin, View):
         return redirect('class_requests_list', pk=pk)
 
 
+class ClassJoinRejectView(LoginRequiredMixin, SuccessMessageMixin, View):
+    """
+    View to reject a teacher to accept a student's join request.
+    """
+    success_message = 'درخواست دانش آموز، رد شد.'
+
+    def setup(self, request, *args, **kwargs):
+        # Retrieve the join request using its primary key from URL parameter and associate the classroom.
+        self.join_request = get_object_or_404(ClassroomJoinRequest, pk=kwargs.get('r_pk'))
+        self.classroom = self.join_request.classroom
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        # Allow only the teacher of the classroom to accept join requests
+        if self.classroom.teacher == request.user:
+            return super().dispatch(request, *args, **kwargs)
+        messages.error(request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    def post(self, request, pk, r_pk):
+        # Add the student to the classroom and remove the pending join request.
+        self.join_request.delete()
+        messages.success(request, self.success_message)
+        return redirect('class_requests_list', pk=pk)
+
+
 class TeacherExamListView(LoginRequiredMixin, ListView):
     model = Exam
     template_name = 'LMS/teacher_exams.html'

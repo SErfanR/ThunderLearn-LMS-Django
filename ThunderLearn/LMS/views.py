@@ -1,24 +1,27 @@
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import render, redirect, get_object_or_404
+# models and forms
 from .models import (Classroom, Way, Exam, UserAnswer, UserScore, ExamAnswer,
                      Part, Question, Choice, ClassroomJoinRequest, Presentation, Slide)
-from django.contrib.auth.decorators import login_required
-from django.urls import reverse_lazy
-from django.http import HttpResponse
+from .forms import PresentationForm, SlideForm
+# class-based views
 from django.views import View
 from django.views.generic.edit import DeleteView, CreateView
 from django.views.generic import ListView, DetailView, TemplateView, UpdateView
 from django.urls import reverse
-import json
 from .default_views import DefaultUpdateView, DefaultCreateView
-from .forms import PresentationForm, SlideForm
-
+# redirecting and etc
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
+from django.http import HttpResponse
+# messages
 from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+# login required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+# other modules
 import json
+import pandas as pd
+import numpy as np
 
 
 @login_required
@@ -872,6 +875,83 @@ class QuestionAnswerChange(LoginRequiredMixin, View):
         self.this_answers.save()
         # TODO: fragment
         return redirect('teacher_exam', pk=pk)
+
+
+def exam_excel_output(request, pk):
+    this_exam = get_object_or_404(Exam, pk=pk)
+    correct_answers = get_object_or_404(ExamAnswer, exam=this_exam).answers
+    correct_answers = json.loads(correct_answers)
+
+    # checking permission
+    classrooms = this_exam.classrooms.all()
+    permission = any(request.user == classroom.teacher for classroom in classrooms)
+    if not permission:
+        messages.error(request, 'شما به این صفحه دسترسی ندارید')
+        return redirect('dashboard')
+
+    # this exam scores
+    all_scores = UserScore.objects.filter(exam=this_exam)
+    usernames = []
+    first_names = []
+    last_names = []
+    scores = []
+    part_scores = []
+
+    for_loop_counter = 0
+    for score in all_scores:
+        for_loop_counter += 1
+        user = score.user
+        usernames.append(user.username)
+        first_names.append(user.first_name)
+        last_names.append(user.last_name)
+        scores.append(score.score)
+        # user part report
+        n = 0
+        user_answers = get_object_or_404(UserAnswer, exam=this_exam, user=user).answers
+        user_answers = json.loads(user_answers)
+        this_user_part = []
+        for part in this_exam.parts.all():
+            c = 0
+            t = 0
+            for _ in part.questions.all():
+                if correct_answers[n] != 0:
+                    c += 1
+                    if correct_answers[n] == user_answers[n]:
+                        t += 1
+                n += 1
+            s = round(t / c * 100, 2)
+            this_user_part.append(s)
+        part_scores.append(this_user_part)
+
+    # creating data dict
+    data = {
+        'ردیف': np.linspace(1, len(all_scores), num=len(all_scores)),
+        'نام کاربری': usernames,
+        'نام': first_names,
+        'نام خانوادگی': last_names,
+        'امتیاز کل': scores,
+    }
+    # adding part bt part report to data
+    for_loop_counter = 0
+    for part in this_exam.parts.all():
+        s = []
+        for p in part_scores:
+            s.append(p[for_loop_counter])
+        data[part.title] = s
+        for_loop_counter += 1
+
+
+    # converting to pandas dataframe
+    df = pd.DataFrame(data)
+
+    # defining the Excel file response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=out.xlsx'
+
+    # converting to excel with pandas
+    df.to_excel(response, index=False, engine='openpyxl')
+
+    return response
 
 
 class ClassWayListView(LoginRequiredMixin, TemplateView):

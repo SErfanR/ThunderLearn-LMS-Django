@@ -41,6 +41,7 @@ urlpatterns = [
 
     # teacher exam-score-related URLs
     path('teacher/exam/<int:pk>/scores/', views.ExamScoresListView.as_view(), name='exam_scores'),
+    path('teacher/exam/<int:pk>/scores/out/', views.exam_excel_output, name='exam_scores_out'),
 
     # part-related URLs
     path('teacher/part/delete/<int:pk>/', views.PartDeleteView.as_view(), name='part_delete'),

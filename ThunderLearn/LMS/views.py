@@ -948,9 +948,73 @@ def exam_excel_output(request, pk):
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=out.xlsx'
 
-    # converting to excel with pandas
-    df.to_excel(response, index=False, engine='openpyxl')
+    # creating Excel workbook using openpyxl
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+    from openpyxl.utils.dataframe import dataframe_to_rows
 
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "نتایج"
+
+    # defining styles
+    header_font = Font(name='B Nazanin', bold=True, size=12, color='FFFFFF')
+    header_fill = PatternFill(start_color='4F81BD', end_color='4F81BD', fill_type='solid')
+    header_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+    cell_alignment = Alignment(horizontal='center', vertical='center')
+    thin_border = Border(left=Side(style='thin'),
+                         right=Side(style='thin'),
+                         top=Side(style='thin'),
+                         bottom=Side(style='thin'))
+
+    # writing data from DataFrame to worksheet
+    for r_idx, row in enumerate(dataframe_to_rows(df, index=False, header=True), 1):
+        for c_idx, value in enumerate(row, 1):
+            cell = ws.cell(row=r_idx, column=c_idx, value=value)
+
+            # Apply header styles
+            if r_idx == 1:
+                cell.font = header_font
+                cell.fill = header_fill
+                cell.alignment = header_alignment
+            else:
+                cell.alignment = cell_alignment
+
+            # Apply borders to all cells
+            cell.border = thin_border
+
+    # Freeze the header row
+    ws.freeze_panes = 'A2'
+
+    # Set column widths (adjust as needed)
+    for column in ws.columns:
+        max_length = 0
+        column_letter = column[0].column_letter
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2) * 1.2
+        ws.column_dimensions[column_letter].width = adjusted_width
+
+    # Add conditional formatting for scores (green for high, red for low)
+    from openpyxl.formatting.rule import ColorScaleRule
+    color_scale_rule = ColorScaleRule(start_type='num', start_value=0, start_color='FF0000',
+                                      mid_type='num', mid_value=50, mid_color='FFFF00',
+                                      end_type='num', end_value=100, end_color='00FF00')
+
+    # Apply to all score columns (columns after "امتیاز کل")
+    first_score_col = 5  # Assuming "امتیاز کل" is column 5
+    last_col = len(df.columns)
+
+    for col in range(first_score_col, last_col + 1):
+        col_letter = ws.cell(row=1, column=col).column_letter
+        ws.conditional_formatting.add(f"{col_letter}2:{col_letter}{len(df) + 1}", color_scale_rule)
+
+    # Save workbook to response
+    wb.save(response)
     return response
 
 

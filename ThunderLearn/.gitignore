@@ -4,3 +4,4 @@ accounts/migrations/
 home/migrations/
 .vs/
 .idea/
+/blog/migrations/

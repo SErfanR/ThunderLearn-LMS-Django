@@ -6,4 +6,5 @@ urlpatterns = [
     path('lms/', include('LMS.urls')),
     path('', include('accounts.urls')),
     path('', include('home.urls')),
+    path('blog/', include('blog.urls')),
 ]

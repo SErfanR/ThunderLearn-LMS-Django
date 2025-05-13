@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.title }} | وبلاگ صاعقه</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.8;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header Styles */
+        .post-header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            color: var(--white);
+            padding: 3rem 1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .post-header-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .post-category {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--white);
+            padding: 0.3rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .post-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .post-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Main Content */
+        .post-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .post-featured-image {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .post-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 3rem;
+        }
+
+        .post-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .post-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .post-content h2,
+        .post-content h3,
+        .post-content h4 {
+            color: var(--primary-dark);
+            margin: 2rem 0 1rem;
+        }
+
+        .post-content h2 {
+            font-size: 1.6rem;
+            border-right: 4px solid var(--accent);
+            padding-right: 1rem;
+        }
+
+        .post-content h3 {
+            font-size: 1.4rem;
+        }
+
+        .post-content h4 {
+            font-size: 1.2rem;
+        }
+
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .post-tag {
+            background: var(--light);
+            color: var(--primary);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .post-tag:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        /* Author Section */
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 3rem;
+        }
+
+        .author-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--white);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .author-info h4 {
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .author-bio {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            margin-bottom: 3rem;
+        }
+
+        .comments-title {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .comment {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .comment-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .comment-date {
+            color: var(--gray);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-text {
+            font-size: 0.95rem;
+        }
+
+        /* Comment Form */
+        .comment-form {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 3rem;
+        }
+
+        .form-title {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-family: 'Vazirmatn', sans-serif;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Related Posts */
+        .related-posts {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .related-post {
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .related-post:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .related-post-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .related-post-content {
+            padding: 1rem;
+        }
+
+        .related-post-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .related-post-title a:hover {
+            color: var(--primary);
+        }
+
+        .related-post-date {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        .post-footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-link {
+            color: var(--white);
+            transition: var(--transition);
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+        }
+
+        .copyright {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .post-title {
+                font-size: 1.6rem;
+            }
+
+            .post-author {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .post-container {
+                padding: 0 1rem;
+            }
+
+            .post-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .post-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Post Header -->
+    <header class="post-header">
+        <div class="post-header-content">
+<!--            <span class="post-category">{{ post.category.name }}</span>-->
+            <h1 class="post-title">{{ post.title }}</h1>
+            <div class="post-meta">
+                <span class="post-meta-item">
+                    <i class="far fa-user"></i>
+                    {{ post.author }}
+                </span>
+                <span class="post-meta-item">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ post.publish_time|date:"Y/m/d" }}
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="post-container">
+        <!-- Featured Image -->
+<!--        <img src="{{ post.thumbnail.url }}" alt="{{ post.title }}" class="post-featured-image">-->
+
+        <!-- Post Content -->
+        <article class="post-content">
+            {{ post.description }}
+            {{ post.body|safe }}
+
+            <!-- Tags -->
+<!--            <div class="post-tags">-->
+<!--                {% for tag in post.tags.all %}-->
+<!--                <a href="{% url 'blog:tag_posts' tag.slug %}" class="post-tag">-->
+<!--                    <i class="fas fa-tag"></i> {{ tag.name }}-->
+<!--                </a>-->
+<!--                {% endfor %}-->
+<!--            </div>-->
+        </article>
+
+        <!-- Author Bio -->
+        <section class="post-author">
+<!--            <img src="{{ post.author.profile.image.url }}" alt="{{ post.author.get_full_name }}" class="author-avatar">-->
+            <div class="author-info">
+                <h4>نویسنده: {{ post.author }}</h4>
+                <p class="author-bio">{{ post.author.profile.bio }}</p>
+            </div>
+        </section>
+
+    <!-- Footer -->
+    <footer class="post-footer">
+        <div class="footer-links">
+            <a href="/" class="footer-link">صفحه اصلی</a>
+            <a href="{% url 'about_us' %}" class="footer-link">درباره ما</a>
+            <a href="{% url 'contact_us' %}" class="footer-link">تماس با ما</a>
+            <a href="{% url 'post_list' %}" class="footer-link">وبلاگ</a>
+        </div>
+        <p class="copyright">تمامی حقوق برای سیستم مدیریت یادگیری صاعقه محفوظ است © ۱۴۰۲</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

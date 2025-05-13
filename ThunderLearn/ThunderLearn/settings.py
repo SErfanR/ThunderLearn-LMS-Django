@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'LMS.apps.LmsConfig',  # added our lms app by its config
     'accounts.apps.AccountsConfig',  # like top
     'home.apps.HomeConfig',  # like top
+    'blog.apps.BlogConfig',  # like top
 ]
 
 MIDDLEWARE = [

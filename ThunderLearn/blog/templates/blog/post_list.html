@@ -297,6 +297,7 @@
     <header class="blog-header">
         <h1 class="blog-title">وبلاگ آموزشی صاعقه</h1>
         <p class="blog-description">آخرین مقالات، آموزش‌ها و اخبار سیستم مدیریت یادگیری</p>
+        <a class="btn" href="/">بازگشت به سایت اصلی</a>
     </header>
 
     <!-- Main Content -->
@@ -306,7 +307,7 @@
             {% for post in posts %}
             <article class="blog-post">
                 <div class="post-image">
-                    <img src="{{ post.thumbnail.url }}" alt="{{ post.title }}" class="post-thumbnail">
+<!--                    <img src="{{ post.thumbnail.url }}" alt="{{ post.title }}" class="post-thumbnail">-->
                     <div class="post-category">{{ post.category.name }}</div>
                 </div>
 
